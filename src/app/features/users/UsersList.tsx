@@ -1,23 +1,14 @@
 import User from './User';
-import { UserInfo_Type } from './User';
-
-// Компонент принимает объект пропсов в котором есть ключ со значением "usersData" и у него тип UserInfo_Type[];
-interface UserList_Type {
-  usersData: UserInfo_Type[];
+import { UserData_Type } from '../../App';
+interface UsersList_Type {
+  usersData: UserData_Type[];
 }
 
-const UsersList: React.FC<UserList_Type> = ({ usersData }) => {
+const UsersList: React.FC<UsersList_Type> = ({ usersData }) => {
   return (
     <ul className="w-full flex flex-col gap-3">
       {usersData.map((userInfo) => {
-        return (
-          <User
-            key={userInfo.id}
-            id={userInfo.id}
-            name={userInfo.name}
-            email={userInfo.email}
-          />
-        );
+        return <User key={userInfo.id} userInfo={userInfo} />;
       })}
     </ul>
   );

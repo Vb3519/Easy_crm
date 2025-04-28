@@ -1,88 +1,137 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect } from 'react';
 
 // UI:
 import Button from '../shared/ui/Button';
 
 import UsersList from './features/users/UsersList';
 
-import { UserInfo_Type } from './features/users/User';
+export interface UserData_Type {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Эту функцию можно вынести в отдельный модуль:
+const fetchData = async (url: string) => {
+  // имитация загрузки:
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('promise fulfilled');
+    }, 3000);
+  });
+
+  try {
+    const response: Response = await fetch(url);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.log('HTTP Error:', `${response.status} ${response.statusText}`);
+    }
+  } catch (error: unknown) {
+    console.log('HTTP Error:', (error as Error).message);
+  }
+};
 
 const App = () => {
-  const [usersData, setUsersData] = useState<UserInfo_Type[]>([]);
-  const [isUsersDataLoading, setIsUsersDataLoading] = useState<boolean>(false);
+  const [usersData, setUsersData] = useState<UserData_Type[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
 
-  const handleLoadUsersData = async () => {
+  const USERS_URL: string = 'http://localhost:3001/users';
+
+  const handleFetchData = async (url: string) => {
     if (usersData.length > 0) {
       alert('Данные пользователей уже загружены!');
       return;
     }
-    console.log('Скачиваем данные пользователей');
 
-    try {
-      // кнопка блокируется на время загрузки
-      setIsUsersDataLoading(true);
+    console.log('Загрузка пользователей');
+    setIsDataLoading(true); // блокировка кнопки при загрузке
 
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve('Имитация загрузки завершена');
-        }, 3000);
+    const fetchedUsersData: UserData_Type[] = await fetchData(url);
+    setIsDataLoading(false);
+
+    if (fetchedUsersData.length > 0) {
+      setUsersData((prevData) => {
+        return [...prevData, ...fetchedUsersData];
       });
-      console.log('Имитация загрузки завершена');
-
-      // служебный объект-промис, содержащий данные (распаристь)
-      const response: Response = await fetch('http://localhost:3001/users');
-
-      if (response.ok) {
-        const usersData: UserInfo_Type[] = await response.json(); // объект промис с данными (распаристь)
-
-        setUsersData((prevData) => {
-          return [...prevData, ...usersData];
-        });
-
-        console.log('usersData:', usersData);
-      } else {
-        console.log('HTTP Error:', response.status, response.statusText);
-      }
-    } catch (error: unknown) {
-      // Приведение типов:
-      console.log('Error:', (error as Error).message);
-    } finally {
-      // Разблокировка кнопки при завершении загрузки (успешном или нет)
-      setIsUsersDataLoading(false);
     }
   };
 
-  const LoadingUsersDataFallback = () => {
-    return <h3>Идет загрузка данных...</h3>;
+  useEffect(() => {
+    console.log('usersData:', usersData);
+  }, [usersData]);
+
+  // Добавление пользователя:
+  // ------------------------------
+  const addNewUser = async () => {
+    const newUser: UserData_Type = {
+      name: 'Viktor',
+      id: 'Admin',
+      email: 'Vb415@bk.ru',
+    };
+
+    const isAlrdyInDatabase: boolean = usersData.some((userInfo) => {
+      return userInfo.id === newUser.id;
+    });
+
+    if (isAlrdyInDatabase) {
+      alert('Пользователь уже добавлен в базу данных!');
+      return;
+    }
+
+    try {
+      const response: Response = await fetch(USERS_URL, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(newUser),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setUsersData((prevData) => {
+          return [...prevData, newUser];
+        });
+        console.log('обновленные данные:', data);
+      }
+    } catch (error: unknown) {
+      console.log('HTTP Error:', (error as Error).message);
+    }
   };
 
   return (
-    <div className="w-full p-3 flex flex-col gap-2 items-center">
-      {usersData.length > 0 ? (
-        <Suspense fallback={<LoadingUsersDataFallback />}>
-          <UsersList usersData={usersData} />
-        </Suspense>
+    <div className="p-3 flex flex-col gap-4 items-center">
+      {isDataLoading ? (
+        <h3 className="font-semibold text-lg">Идет загрузка данных...</h3>
       ) : (
-        <h3 className="font-semibold text-lg text-center">
-          Сейчас данные о пользователях не загружены
+        ''
+      )}
+      {usersData.length > 0 ? (
+        <UsersList usersData={usersData} />
+      ) : (
+        <h3 className="font-semibold text-lg">
+          Данные пользователей не загружены
         </h3>
       )}
-
-      <div className="p-2 flex gap-3 flex-wrap">
+      <div className="width-full flex gap-3 flex-wrap">
         <Button
-          disabled={isUsersDataLoading}
-          className="font-semibold text-sm p-2 bg-amber-300 rounded-md cursor-pointer"
+          type="button"
+          children="Загрузить данные пользователей"
+          className="bg-amber-300"
           onClick={() => {
-            handleLoadUsersData();
+            handleFetchData(USERS_URL);
           }}
-          children="Скачать данные"
+          disabled={isDataLoading}
         />
         <Button
-          className="font-semibold text-sm p-2 bg-blue-300 rounded-md cursor-pointer"
-          onClick={() => {
-            console.log('Добавляем данные пользователя');
-          }}
+          type="button"
           children="Добавить пользователя"
+          className="bg-blue-300"
+          onClick={(event) => {
+            event.preventDefault();
+            addNewUser();
+            console.log('Добавление пользователя');
+          }}
         />
       </div>
     </div>
