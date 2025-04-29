@@ -1,148 +1,133 @@
 import { useState, useEffect } from 'react';
+import { SiCivicrm } from 'react-icons/si';
+import { IoPersonCircleOutline } from 'react-icons/io5';
+import { PiGearSix } from 'react-icons/pi';
+import { IoIosNotificationsOutline } from 'react-icons/io';
+import { RxQuestionMarkCircled } from 'react-icons/rx';
+import { FaChevronDown } from 'react-icons/fa6';
 
 // UI:
 import Button from '../shared/ui/Button';
 
-import UsersList from './features/users/UsersList';
-
-export interface UserData_Type {
-  id: string;
-  name: string;
-  email: string;
-}
-
-// Эту функцию можно вынести в отдельный модуль:
-const fetchData = async (url: string) => {
-  // имитация загрузки:
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('promise fulfilled');
-    }, 3000);
-  });
-
-  try {
-    const response: Response = await fetch(url);
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.log('HTTP Error:', `${response.status} ${response.statusText}`);
-    }
-  } catch (error: unknown) {
-    console.log('HTTP Error:', (error as Error).message);
-  }
-};
-
 const App = () => {
-  const [usersData, setUsersData] = useState<UserData_Type[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
-
-  const USERS_URL: string = 'http://localhost:3001/users';
-
-  const handleFetchData = async (url: string) => {
-    if (usersData.length > 0) {
-      alert('Данные пользователей уже загружены!');
-      return;
-    }
-
-    console.log('Загрузка пользователей');
-    setIsDataLoading(true); // блокировка кнопки при загрузке
-
-    const fetchedUsersData: UserData_Type[] = await fetchData(url);
-    setIsDataLoading(false);
-
-    if (fetchedUsersData.length > 0) {
-      setUsersData((prevData) => {
-        return [...prevData, ...fetchedUsersData];
-      });
-    }
-  };
-
-  useEffect(() => {
-    console.log('usersData:', usersData);
-  }, [usersData]);
-
-  // Добавление пользователя:
-  // ------------------------------
-  const addNewUser = async () => {
-    const newUser: UserData_Type = {
-      name: 'Viktor',
-      id: 'Admin',
-      email: 'Vb415@bk.ru',
-    };
-
-    const currentUsersDataBase = await fetchData(USERS_URL);
-    const isAlrdyInDatabase: boolean = currentUsersDataBase.some(
-      (userInfo: any) => {
-        return userInfo.id === newUser.id;
-      }
-    );
-
-    if (isAlrdyInDatabase) {
-      alert('Пользователь уже добавлен в базу данных!');
-      return;
-    }
-
-    try {
-      const response: Response = await fetch(USERS_URL, {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify(newUser),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        setUsersData((prevData) => {
-          return [...prevData, newUser];
-        });
-        console.log('обновленные данные:', data);
-      } else {
-        console.log('Ошибка на сервере:', response.status);
-      }
-    } catch (error: unknown) {
-      console.log('HTTP Error:', (error as Error).message);
-    }
-  };
-
   return (
-    <>
-      <div className="p-3 flex flex-col gap-4 items-center">
-        {isDataLoading ? (
-          <h3 className="font-semibold text-lg">Идет загрузка данных...</h3>
-        ) : (
-          ''
-        )}
-        {usersData.length > 0 ? (
-          <UsersList usersData={usersData} />
-        ) : (
-          <h3 className="font-semibold text-lg">
-            Данные пользователей не загружены
-          </h3>
-        )}
-      </div>
-      <div className="width-full flex gap-3 flex-wrap">
-        <Button
-          type="button"
-          children="Загрузить данные пользователей"
-          className="bg-amber-300"
-          onClick={() => {
-            handleFetchData(USERS_URL);
-          }}
-          disabled={isDataLoading}
-        />
-        <Button
-          type="button"
-          children="Добавить пользователя"
-          className="bg-blue-300"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation(); // Останавливаем распространение события
-            addNewUser();
-            console.log('Добавление пользователя');
-          }}
-        />
-      </div>
-    </>
+    <div className="p-2 flex flex-col gap-4 bg-[#F5F5F5]">
+      <header className="p-2 flex gap-2 font-[inter] flex-wrap justify-between">
+        <div className="w-fit p-2 rounded-xl bg-blue-500 cursor-pointer">
+          <SiCivicrm className="text-[30px] text-[whitesmoke]" />
+        </div>
+        <div className="flex gap-6 items-center justify-between">
+          <div className="flex gap-2 items-center">
+            <IoPersonCircleOutline className="text-[45px]" title="Аватар" />
+            <p className="font-semibold text-sm" title="Имя пользователя">
+              User Name
+            </p>
+          </div>
+          <ul className="flex gap-2">
+            <li>
+              <PiGearSix
+                className="text-[25px] cursor-pointer"
+                title="Настройки"
+              />
+            </li>
+            <li>
+              <IoIosNotificationsOutline
+                className="text-[25px] cursor-pointer"
+                title="Уведомления"
+              />
+            </li>
+          </ul>
+        </div>
+      </header>
+      <main>
+        <div className="p-2 flex gap-2">
+          <Button
+            className="bg-blue-500 text-[whitesmoke]"
+            children="Проекты"
+            onClick={() => {
+              console.log('Открываем проекты');
+            }}
+          />
+          <Button
+            className="bg-blue-500 text-[whitesmoke]"
+            children="Пользователи"
+            onClick={() => {
+              console.log('Открываем список пользователей');
+            }}
+          />
+        </div>
+
+        <div className="mt-3 p-2 flex flex-col gap-3">
+          <h2 className="font-semibold text-2xl">Ваши проекты:</h2>
+
+          <div className="flex flex-col gap-4">
+            <h3 className="font-semibold text-lg leading-[25px]">
+              Название очень перспективного проекта
+            </h3>
+            <nav>
+              <ul>
+                <li>Задачи</li>
+              </ul>
+            </nav>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2 items-center">
+                <span className="w-3 h-3 bg-orange-700 rounded-[50%]"></span>
+                <h5>К выполнению</h5>
+                <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
+                  3
+                </span>
+                <FaChevronDown className="ml-auto" />
+              </div>
+              <ul>
+                <li className="flex flex-col gap-4 items-center justify-center">
+                  <p className="font-semibold text-sm text-center">
+                    В данный момент список Ваш задач "К выполению" пуст
+                  </p>
+                  <RxQuestionMarkCircled className="text-[150px] text-[#e2e2e2]" />
+                </li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2 items-center">
+                <span className="w-3 h-3 bg-blue-700 rounded-[50%]"></span>
+                <h5>В процессе</h5>
+                <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
+                  1
+                </span>
+                <FaChevronDown className="ml-auto" />
+              </div>
+              <ul>
+                <li className="flex flex-col gap-4 items-center justify-center">
+                  <p className="font-semibold text-sm text-center">
+                    В данный момент список Ваш задач "В процессе" пуст
+                  </p>
+                  <RxQuestionMarkCircled className="text-[150px] text-[#e2e2e2]" />
+                </li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2 items-center">
+                <span className="w-3 h-3 bg-green-700 rounded-[50%]"></span>
+                <h5>Завершены</h5>
+                <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
+                  5
+                </span>
+                <FaChevronDown className="ml-auto" />
+              </div>
+              <ul>
+                <li className="flex flex-col gap-4 items-center justify-center">
+                  <p className="font-semibold text-sm text-center">
+                    В данный момент Ваш список завершенных задач пуст
+                  </p>
+                  <RxQuestionMarkCircled className="text-[150px] text-[#e2e2e2]" />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer></footer>
+    </div>
   );
 };
 

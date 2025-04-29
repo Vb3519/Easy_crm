@@ -3,7 +3,7 @@ interface Button_Type {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   disabled?: boolean;
-  type: 'submit' | 'reset' | 'button';
+  type?: 'submit' | 'reset' | 'button';
 }
 
 const Button = ({

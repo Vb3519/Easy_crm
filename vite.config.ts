@@ -5,4 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: 'repo_name',
+  server: {
+    watch: {
+      ignored: ['**/testData.json'],
+    },
+  },
 });
