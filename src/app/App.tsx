@@ -70,9 +70,12 @@ const App = () => {
       email: 'Vb415@bk.ru',
     };
 
-    const isAlrdyInDatabase: boolean = usersData.some((userInfo) => {
-      return userInfo.id === newUser.id;
-    });
+    const currentUsersDataBase = await fetchData(USERS_URL);
+    const isAlrdyInDatabase: boolean = currentUsersDataBase.some(
+      (userInfo: any) => {
+        return userInfo.id === newUser.id;
+      }
+    );
 
     if (isAlrdyInDatabase) {
       alert('Пользователь уже добавлен в базу данных!');
@@ -93,6 +96,8 @@ const App = () => {
           return [...prevData, newUser];
         });
         console.log('обновленные данные:', data);
+      } else {
+        console.log('Ошибка на сервере:', response.status);
       }
     } catch (error: unknown) {
       console.log('HTTP Error:', (error as Error).message);
@@ -100,19 +105,21 @@ const App = () => {
   };
 
   return (
-    <div className="p-3 flex flex-col gap-4 items-center">
-      {isDataLoading ? (
-        <h3 className="font-semibold text-lg">Идет загрузка данных...</h3>
-      ) : (
-        ''
-      )}
-      {usersData.length > 0 ? (
-        <UsersList usersData={usersData} />
-      ) : (
-        <h3 className="font-semibold text-lg">
-          Данные пользователей не загружены
-        </h3>
-      )}
+    <>
+      <div className="p-3 flex flex-col gap-4 items-center">
+        {isDataLoading ? (
+          <h3 className="font-semibold text-lg">Идет загрузка данных...</h3>
+        ) : (
+          ''
+        )}
+        {usersData.length > 0 ? (
+          <UsersList usersData={usersData} />
+        ) : (
+          <h3 className="font-semibold text-lg">
+            Данные пользователей не загружены
+          </h3>
+        )}
+      </div>
       <div className="width-full flex gap-3 flex-wrap">
         <Button
           type="button"
@@ -129,12 +136,13 @@ const App = () => {
           className="bg-blue-300"
           onClick={(event) => {
             event.preventDefault();
+            event.stopPropagation(); // Останавливаем распространение события
             addNewUser();
             console.log('Добавление пользователя');
           }}
         />
       </div>
-    </div>
+    </>
   );
 };
 
