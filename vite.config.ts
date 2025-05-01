@@ -7,7 +7,7 @@ export default defineConfig({
   base: 'repo_name',
   server: {
     watch: {
-      ignored: ['**/testData.json'],
+      ignored: ['**/crmData.json'],
     },
   },
 });

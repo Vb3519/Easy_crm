@@ -8,13 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "backend": "json-server --watch testData.json --port 3001"
+    "backend": "json-server --watch crmData.json --port 3001"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "^0.5.5",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/react-router-dom": "^5.3.3",
@@ -30,6 +31,7 @@
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.2",
+    "steiger": "^0.5.6",
     "tailwindcss": "^4.1.4",
     "uuid": "^11.1.0"
   }
