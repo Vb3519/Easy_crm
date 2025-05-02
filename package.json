@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "gh-pages -d public",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "backend": "json-server --watch crmData.json --port 3001"
+    "backend": "json-server --watch crmData.json --port 3001 --static ./public"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "@types/react-dom": "^19.1.2",
     "@types/react-router-dom": "^5.3.3",
     "gh-pages": "^6.3.0",
+    "json-server": "^1.0.0-beta.3",
     "vite": "^6.3.3"
   },
   "dependencies": {
