@@ -126,7 +126,8 @@ export const deleteUserData = createAsyncThunk(
       }, 1000);
     });
 
-    const urlWithId: string = `http://localhost:3001/users/${userId}`;
+    // const urlWithId: string = `http://localhost:3001/users/${userId}`;
+    const urlWithId: string = `https://easy-crm-3ii3.onrender.com/users/${userId}`;
 
     try {
       const response: Response = await fetch(urlWithId, {
