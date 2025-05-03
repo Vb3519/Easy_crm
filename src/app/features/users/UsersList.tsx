@@ -1,3 +1,6 @@
+import { IoPersonSharp } from 'react-icons/io5';
+import { FaChevronDown } from 'react-icons/fa6';
+
 import { useState, useEffect } from 'react';
 import { AiOutlineProduct } from 'react-icons/ai';
 
@@ -9,11 +12,26 @@ interface UsersList_Props {
 }
 
 const UsersList: React.FC<UsersList_Props> = ({ users }) => {
+  const [openedUserMenuId, setOpenedUserMenuId] = useState<string | null>(null);
+
+  const handleSetOpenedUserMenuId = (id: string) => {
+    setOpenedUserMenuId((prevId) => {
+      return prevId === id ? null : id;
+    });
+  };
+
   return (
     <ul className="flex flex-col gap-1">
       {users.length > 0 ? (
         users.map((userInfo) => {
-          return <User key={userInfo.id} userInfo={userInfo} />;
+          return (
+            <User
+              key={userInfo.id}
+              userInfo={userInfo}
+              isMenuOpened={openedUserMenuId === userInfo.id}
+              openOptionsMenu={handleSetOpenedUserMenuId}
+            />
+          );
         })
       ) : (
         <div className="flex flex-col gap-3 items-center">

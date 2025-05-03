@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { User_Type } from '../../../entities/User_Type.ts';
+import createNewUser from '../../../shared/utils/createNewUser.ts';
+import { build } from 'vite';
 
 interface UsersState_Type {
   users: User_Type[];
@@ -19,31 +21,45 @@ const initialState: UsersState_Type = {
 };
 
 // ---------------------------------------
+// Общиe функции загрузки (перенеси их в utils):
+// ---------------------------------------
+
+// имитация ответа от сервера:
+const serverDelayImitaion = async (delayTimer: number): Promise<void> => {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('done');
+    }, delayTimer);
+  });
+};
+
+// загрузка данных:
+const fetchData = async (url: string) => {
+  const response: Response = await fetch(url);
+
+  if (response.ok) {
+    const data: unknown = await response.json();
+    return data;
+  } else {
+    console.log(`HTTP Error: ${response.status} ${response.statusText}`);
+    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+  }
+};
+
+// Создание нового пользователя:
+
+// ---------------------------------------
 // Загрузка данных пользователей:
 // ---------------------------------------
 export const fetchUsersData = createAsyncThunk<User_Type[], string>(
   'users/fetchUsers',
   async (url: string, thunkAPI) => {
     // имитация ответа сервера:
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
-
-    console.log('thunkAPI:', thunkAPI);
+    await serverDelayImitaion(3000);
 
     try {
-      const response: Response = await fetch(url);
-
-      if (response.ok) {
-        const usersData: User_Type[] = await response.json();
-        return usersData;
-      } else {
-        throw new Error(
-          `HTTP Error: ${response.status} ${response.statusText}`
-        );
-      }
+      const usersData = (await fetchData(url)) as User_Type[];
+      return usersData;
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue((error as Error).message);
       // throw new Error(`Error: ${(error as Error).message}`);
@@ -63,30 +79,19 @@ export const addNewUserData = createAsyncThunk(
       }, 2000);
     });
 
-    const newUser: User_Type = {
-      // ------------------- сюда нужно добавить функцию, которая будет формировать объект с данными нового пользователя
-      id: 'Admin',
-      name: 'Viktor',
-      added_at: '23:45',
-    };
+    // Создание нового пользователя:
+    const newUser: User_Type = createNewUser('Viktor');
 
     try {
-      const response: Response = await fetch(url);
+      // Запрос к серверу и проверка, добавлен ли уже пользователь:
+      const usersData = (await fetchData(url)) as User_Type[];
 
-      // Первоначальный запрос к серверу:
-      if (!response.ok) {
-        return thunkAPI.rejectWithValue(
-          `HTTP Error: ${response.status} ${response.statusText}`
-        );
-      }
-      // Проверка, добавлен ли уже пользователь:
-      const usersData: User_Type[] = await response.json();
       const isAlrdyAdded: boolean = usersData.some((userInfo) => {
-        return userInfo.id === newUser.id;
+        return userInfo.name === newUser.name;
       });
 
       if (isAlrdyAdded) {
-        alert(`Пользовтаель с именем ${newUser.name} уже добавлен!`);
+        alert(`Пользователь с именем ${newUser.name} уже добавлен!`);
         return;
       }
 
@@ -104,6 +109,41 @@ export const addNewUserData = createAsyncThunk(
         return newUserInfo;
       }
     } catch (error) {
+      return thunkAPI.rejectWithValue((error as Error).message);
+    }
+  }
+);
+
+// ---------------------------------------
+// Удалить пользователя:
+// ---------------------------------------
+export const deleteUserData = createAsyncThunk(
+  'users/delete',
+  async (userId: string, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 1000);
+    });
+
+    const urlWithId: string = `http://localhost:3001/users/${userId}`;
+
+    try {
+      const response: Response = await fetch(urlWithId, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        const deletedUserData: User_Type = await response.json();
+        return deletedUserData;
+      } else {
+        console.log(`HTTP Error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `HTTP Error: ${response.status} ${response.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      console.log(`Error: ${(error as Error).message}`);
       return thunkAPI.rejectWithValue((error as Error).message);
     }
   }
@@ -149,6 +189,23 @@ const usersSlice = createSlice({
 
     builder.addCase(addNewUserData.rejected, (state) => {
       return { ...state, isLoadingViaAPI: false };
+    });
+
+    // Удаление пользователя:
+    builder.addCase(deleteUserData.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
+    builder.addCase(deleteUserData.fulfilled, (state, action) => {
+      state.isLoadingViaAPI = false;
+
+      state.users = state.users.filter((userInfo: User_Type) => {
+        return userInfo.id !== action.payload.id;
+      });
+    });
+
+    builder.addCase(deleteUserData.rejected, (state) => {
+      state.isLoadingViaAPI = false;
     });
   },
 });

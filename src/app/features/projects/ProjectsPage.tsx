@@ -66,7 +66,7 @@ const ProjectsPage = () => {
           <ul>
             <li className="flex flex-col gap-4 items-center justify-center">
               <p className="font-semibold text-sm text-center">
-                В данный момент список Ваш задач "К выполению" пуст
+                В данный момент Ваш список задач "К выполению" пуст
               </p>
               <RxQuestionMarkCircled className="text-[150px] text-[#e2e2e2]" />
             </li>
@@ -84,7 +84,7 @@ const ProjectsPage = () => {
           <ul>
             <li className="flex flex-col gap-4 items-center justify-center">
               <p className="font-semibold text-sm text-center">
-                В данный момент список Ваш задач "В процессе" пуст
+                В данный момент Ваш список задач "В процессе" пуст
               </p>
               <RxQuestionMarkCircled className="text-[150px] text-[#e2e2e2]" />
             </li>
