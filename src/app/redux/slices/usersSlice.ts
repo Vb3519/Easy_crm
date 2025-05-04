@@ -6,7 +6,6 @@ import { build } from 'vite';
 
 interface UsersState_Type {
   users: User_Type[];
-  userToAdd: User_Type | null;
   isLoadingViaAPI: boolean;
 }
 
@@ -16,7 +15,6 @@ interface UsersSlice_Type {
 
 const initialState: UsersState_Type = {
   users: [],
-  userToAdd: null,
   isLoadingViaAPI: false,
 };
 
@@ -126,8 +124,8 @@ export const deleteUserData = createAsyncThunk(
       }, 1000);
     });
 
-    // const urlWithId: string = `http://localhost:3001/users/${userId}`;
-    const urlWithId: string = `https://easy-crm-3ii3.onrender.com/users/${userId}`;
+    const urlWithId: string = `http://localhost:3001/users/${userId}`;
+    // const urlWithId: string = `https://easy-crm-3ii3.onrender.com/users/${userId}`;
 
     try {
       const response: Response = await fetch(urlWithId, {
