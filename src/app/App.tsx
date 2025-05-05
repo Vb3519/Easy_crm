@@ -11,8 +11,8 @@ import { FaTelegramPlane } from 'react-icons/fa';
 // UI:
 import Button from '../shared/ui/Button';
 
-import ProjectsPage from './features/projects/ProjectsPage';
-import ProjectsListPage from './features/projects/ProjectsMenuPage';
+import ActiveProjectDetails from './features/projects/ActiveProjectDetails';
+import GeneralProjectsList from './features/projects/GeneralProjectsList';
 
 import UsersPage from './features/users/UsersPage';
 
@@ -88,10 +88,10 @@ const App = () => {
 
         <div className="flex flex-col gap-4 xs:px-4 md:basis-[40%] md:px-0 xl:basis-[25%]">
           {isUsersPageOpened ? <UsersPage /> : null}
-          {isProjectsPageOpened ? <ProjectsListPage /> : null}
+          {isProjectsPageOpened ? <GeneralProjectsList /> : null}
         </div>
 
-        <ProjectsPage />
+        <ActiveProjectDetails />
       </main>
       <footer className="font-[inter] p-2 flex flex-col gap-4 flex-grow xs:px-4 lg:px-16">
         <div className="flex flex-col gap-2 xs:flex-row xs:items-center">

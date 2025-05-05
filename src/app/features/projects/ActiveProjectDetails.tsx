@@ -8,9 +8,8 @@ import { LuMessageSquareMore } from 'react-icons/lu';
 import { LuPaperclip } from 'react-icons/lu';
 
 import Button from '../../../shared/ui/Button';
-import ProjectsListPage from './ProjectsMenuPage';
 
-const ProjectsPage = () => {
+const ActiveProjectDetails = () => {
   return (
     <div className="flex flex-col gap-3 xs:px-4 md:basis-[60%] md:px-0 xl:basis-[75%]">
       <div className="h-full p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow">
@@ -190,4 +189,4 @@ const ProjectsPage = () => {
   );
 };
 
-export default ProjectsPage;
+export default ActiveProjectDetails;
