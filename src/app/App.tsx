@@ -31,6 +31,7 @@ const App = () => {
 
   return (
     <div className="h-screen flex flex-col gap-4 bg-[#F5F5F5] overflow-y-auto">
+      {/* ------------------------------ ХЕАДЕР: ------------------------------ */}
       <header className="p-2 flex gap-2 flex-grow font-[inter] flex-wrap justify-between xs:px-4 lg:px-16">
         <div className="flex gap-3 items-center">
           <div className="w-fit p-2 rounded-xl bg-blue-500 cursor-pointer">
@@ -66,6 +67,7 @@ const App = () => {
           </ul>
         </div>
       </header>
+      {/* ------------------------------ МЕИН: ------------------------------ */}
       <main className="font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-16">
         <div className="p-2 flex gap-2 xs:px-4 md:hidden">
           <Button
@@ -93,6 +95,8 @@ const App = () => {
 
         <ActiveProjectDetails />
       </main>
+
+      {/* ------------------------------ ФУТЕР: ------------------------------ */}
       <footer className="font-[inter] p-2 flex flex-col gap-4 flex-grow xs:px-4 lg:px-16">
         <div className="flex flex-col gap-2 xs:flex-row xs:items-center">
           <h2 className="font-bold text-xl text-gray-300">Easy CRM</h2>

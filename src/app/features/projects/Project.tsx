@@ -23,7 +23,7 @@ const Project: React.FC<ProjectProps_Type> = ({
       className="relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg cursor-pointer"
     >
       <GrProjects />
-      <p>{projectInfo.name}</p>
+      <p>{projectInfo.title}</p>
       <BsThreeDotsVertical
         className="ml-auto"
         onClick={() => {

@@ -58,8 +58,12 @@ export const addNewProject = createAsyncThunk<Project_Type | undefined, string>(
     // -------------------------------------------------------------------- тут добавить функцию, которая создает проект
     const newProjectData: Project_Type = {
       id: '4',
-      name: 'Название проекта №4',
-      tasks: [],
+      title: 'Название проекта №4',
+      tasks: {
+        to_do: [],
+        in_process: [],
+        completed: [],
+      },
     };
 
     await serverDelayImitation(2000);
@@ -71,7 +75,7 @@ export const addNewProject = createAsyncThunk<Project_Type | undefined, string>(
 
       const isAlrdyAdded: boolean = currentProjects.some(
         (projectInfo: Project_Type) => {
-          return projectInfo.name === newProjectData.name;
+          return projectInfo.title === newProjectData.title;
         }
       );
 
@@ -184,7 +188,7 @@ const projectsSlice = createSlice({
     builder.addCase(addNewProject.fulfilled, (state, action) => {
       state.isLoadingViaAPI = false;
 
-      if (action.payload?.name && action.payload?.id) {
+      if (action.payload?.title && action.payload?.id) {
         state.projects.push(action.payload);
       }
     });
