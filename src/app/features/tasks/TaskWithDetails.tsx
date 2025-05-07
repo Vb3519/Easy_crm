@@ -10,6 +10,8 @@ interface TaskWithDetailsProps_Type {
   title: string;
   description: string;
   status?: string;
+  isOptionsMenuOpened: boolean;
+  toggleTaskOptionsMenu: () => void;
 }
 
 const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
@@ -17,12 +19,19 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
   type,
   title,
   description,
+  isOptionsMenuOpened,
+  toggleTaskOptionsMenu,
 }) => {
   return (
-    <li className="p-4 flex flex-col gap-3 rounded-2xl elem-shadow">
+    <li className="relative p-4 flex flex-col gap-3 rounded-2xl elem-shadow">
       <div className="flex gap-2 items-center justify-between">
         <div className={`p-2 rounded-2xl ${className}`}>{type}</div>
-        <BsThreeDotsVertical />
+        <BsThreeDotsVertical
+          className="cursor-pointer"
+          onClick={() => {
+            toggleTaskOptionsMenu();
+          }}
+        />
       </div>
       <h4 className="font-semibold">{title}</h4>
       <p className="leading-5">{description}</p>
@@ -45,6 +54,21 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
           </li>
         </ul>
       </div>
+      {isOptionsMenuOpened ? (
+        <ul className="absolute z-10 top-[50px] right-[15px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
+          <li className="cursor-pointer hover:underline">К выполнению</li>
+          <li className="cursor-pointer hover:underline">В процессе</li>
+          <li className="cursor-pointer hover:underline">Завершить</li>
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              console.log('Клик ^_^');
+            }}
+          >
+            Удалить
+          </li>
+        </ul>
+      ) : null}
     </li>
   );
 };

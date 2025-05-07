@@ -3,5 +3,5 @@ export interface Task_Type {
   type: string;
   title: string;
   description: string;
-  status: string;
+  status?: string;
 }

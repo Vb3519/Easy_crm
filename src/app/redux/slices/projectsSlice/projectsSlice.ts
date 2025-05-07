@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Project_Type } from '../../../../entities/Project_Type';
+import { Task_Type } from '../../../../entities/Task_Type';
 
 // ------------------------------
 // Общие функции (добавить в папку utils):
@@ -86,7 +87,7 @@ export const addNewProject = createAsyncThunk<Project_Type | undefined, string>(
 
       const addNewProjectResponse: Response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProjectData),
       });
 
@@ -143,24 +144,31 @@ export const deleteSelectedProject = createAsyncThunk<Project_Type, string>(
 interface ProjectsState_Type {
   isLoadingViaAPI: boolean;
   projects: Project_Type[];
+  selectedProjectId: string | null;
 }
 
 interface ProjectsSlice_Type {
   projects: {
     isLoadingViaAPI: boolean;
     projects: Project_Type[];
+    selectedProjectId: string | null;
   };
 }
 
 const initialState: ProjectsState_Type = {
   projects: [],
   isLoadingViaAPI: false,
+  selectedProjectId: null,
 };
 
 const projectsSlice = createSlice({
   name: 'projects',
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setActiveProjectId: (state, action) => {
+      state.selectedProjectId = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     // Загрузка данных по проектам:
     // -------------------------------
@@ -216,6 +224,9 @@ const projectsSlice = createSlice({
     });
   },
 });
+
+// Действия:
+export const { setActiveProjectId } = projectsSlice.actions;
 
 // Часть состояния:
 export const selectProjectsSlice = (state: ProjectsSlice_Type) =>

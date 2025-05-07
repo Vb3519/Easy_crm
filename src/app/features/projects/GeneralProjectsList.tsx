@@ -9,7 +9,6 @@ import Project from './Project';
 import Button from '../../../shared/ui/Button';
 
 import {
-  selectProjectsSlice,
   selectIsLoadingViaAPI,
   selectProjects,
   loadProjectsData,

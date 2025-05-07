@@ -96,7 +96,7 @@ export const addNewUserData = createAsyncThunk(
       // Добавление нового пользователя:
       const addNewUserResponse: Response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
       });
 
