@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Project_Type } from '../../../../entities/Project_Type';
-import { Task_Type } from '../../../../entities/Task_Type';
 
 // ------------------------------
 // Общие функции (добавить в папку utils):

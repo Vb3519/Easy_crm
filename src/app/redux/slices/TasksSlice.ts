@@ -1,0 +1,222 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+import { Task_Type } from '../../../entities/Task_Type';
+
+interface TasksState_Type {
+  isLoadingViaAPI: boolean;
+  tasks: Task_Type[];
+}
+
+interface TasksSlice_Type {
+  tasks: {
+    isLoadingViaAPI: boolean;
+    tasks: Task_Type[];
+  };
+}
+
+// -------------------------------------
+// Загрузка задач выбранного проекта:
+// -------------------------------------
+export const loadActiveProjectTasks = createAsyncThunk(
+  'tasks/loadProjectTasks',
+  async (projectIdValue: string, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 2000);
+    });
+
+    try {
+      const response: Response = await fetch(
+        `http://localhost:3001/tasks?projectId=${projectIdValue}`,
+        {
+          method: 'GET',
+        }
+      );
+
+      if (response.ok) {
+        const activeprojectTasks: Task_Type[] = await response.json();
+        console.log('Все задачи выбранного проекта:', activeprojectTasks);
+        return activeprojectTasks;
+      } else {
+        console.log(`HTTP Error: ${response.status} ${response.statusText}`);
+        return thunkAPI.rejectWithValue(
+          `HTTP Error: ${response.status} ${response.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      console.log(`HTTP Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `HTTP Error: ${(error as Error).message}`
+      );
+    }
+  }
+);
+
+// -------------------------------
+// Добавление новой задачи:
+// -------------------------------
+export const addNewTask = createAsyncThunk(
+  'tasks/addNewTask',
+  async (url: string, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 2000);
+    });
+
+    // -------------------------------------------------------- сделать функцию, которая формирует задачу
+    const newTask: Task_Type = {
+      id: '8',
+      projectId: '2', // ------------------------------------------- вытаскивать id активного проекта из селектора в слайсе проектов
+      type: 'Веб-разработка',
+      title: '!!!Тестовая задача!',
+      description: 'Описание тестовой задачи по веб-разработке',
+      status: 'to_do',
+    };
+
+    try {
+      const addNewTaskResponse: Response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTask),
+      });
+
+      if (addNewTaskResponse.ok) {
+        const addedTask: Task_Type = await addNewTaskResponse.json();
+        console.log('Добавлена новая задача:', addedTask);
+        return addedTask;
+      } else {
+        console.log(
+          `HTTP Error: ${addNewTaskResponse.status} ${addNewTaskResponse.statusText}`
+        );
+        thunkAPI.rejectWithValue(
+          `HTTP Error: ${addNewTaskResponse.status} ${addNewTaskResponse.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      console.log(`Error: ${(error as Error).message}`);
+      thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+    }
+  }
+);
+
+// -------------------------------------
+// Изменение статуса задачи:
+// -------------------------------------
+export const changeTaskStatus = createAsyncThunk(
+  'tasks/changeStatus',
+  async (payload: { taskId: string; taskStatus: string }, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 2000);
+    });
+
+    const { taskId, taskStatus } = payload;
+
+    try {
+      const changeTaskStatusResponse: Response = await fetch(
+        `http://localhost:3001/tasks/${taskId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: taskStatus }),
+        }
+      );
+
+      if (changeTaskStatusResponse.ok) {
+        const editedTask: Task_Type = await changeTaskStatusResponse.json();
+        console.log('Изменен статус задачи:', editedTask);
+
+        return editedTask;
+      } else {
+        console.log(
+          `HTTP Error: ${changeTaskStatusResponse.status} ${changeTaskStatusResponse.statusText}`
+        );
+
+        return thunkAPI.rejectWithValue(
+          `HTTP Error: ${changeTaskStatusResponse.status} ${changeTaskStatusResponse.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      console.log(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+    }
+  }
+);
+
+const initialState: TasksState_Type = {
+  isLoadingViaAPI: false,
+  tasks: [],
+};
+
+const tasksSlice = createSlice({
+  name: 'tasks',
+  initialState: initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    // Добавление новой задачи:
+    // -------------------------------
+    builder.addCase(addNewTask.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
+    builder.addCase(addNewTask.fulfilled, (state, action) => {
+      if (action.payload?.projectId) {
+        state.tasks.push(action.payload);
+      }
+      state.isLoadingViaAPI = false;
+    });
+
+    builder.addCase(addNewTask.rejected, (state) => {
+      state.isLoadingViaAPI = false;
+    });
+
+    // Загрузка задач выбранного проекта:
+    // -------------------------------------
+    builder.addCase(loadActiveProjectTasks.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
+    builder.addCase(loadActiveProjectTasks.fulfilled, (state, action) => {
+      state.isLoadingViaAPI = false;
+      state.tasks = action.payload;
+    });
+
+    builder.addCase(loadActiveProjectTasks.rejected, (state) => {
+      state.isLoadingViaAPI = false;
+    });
+
+    // Изменение статуса задачи:
+    // -------------------------------------
+    builder.addCase(changeTaskStatus.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
+    builder.addCase(changeTaskStatus.fulfilled, (state, action) => {
+      const { id, status } = action.payload;
+
+      state.isLoadingViaAPI = false;
+
+      const taskToEdit = state.tasks.find((taskInfo) => {
+        return taskInfo.id === id;
+      });
+
+      if (taskToEdit && status) {
+        taskToEdit.status = status; // мутации нет, т.к. immer
+      }
+    });
+
+    builder.addCase(changeTaskStatus.rejected, (state) => {
+      state.isLoadingViaAPI = false;
+    });
+  },
+});
+
+// Действия:
+
+// Часть состояния:
+export const selectTasksSlice = (state: TasksSlice_Type) => state.tasks;
+
+export default tasksSlice.reducer;

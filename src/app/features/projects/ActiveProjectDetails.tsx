@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { selectProjectsSlice } from '../../redux/slices/projectsSlice/projectsSlice';
+import { selectTasksSlice } from '../../redux/slices/TasksSlice';
+import { addNewTask } from '../../redux/slices/TasksSlice';
 
 import Button from '../../../shared/ui/Button';
 
@@ -20,6 +22,10 @@ const ActiveProjectDetails = () => {
     string | null
   >(null);
 
+  const tasks_URL: string = 'http://localhost:3001/tasks';
+
+  // Проекты:
+  // --------------------------
   const projectsStateSlice = useSelector(selectProjectsSlice);
   const currentProjectsList: Project_Type[] = projectsStateSlice.projects;
   const selectedProjectId: string | null = projectsStateSlice.selectedProjectId;
@@ -31,17 +37,24 @@ const ActiveProjectDetails = () => {
 
   // Массивы с задачами выбранного проекта трех типов ("к выполнению"; "в процессе"; "завершены"):
   // --------------------------
-  const tasksTodo: Task_Type[] | undefined = activeProjectDetails?.tasks?.to_do;
+  const tasksStateSlice = useSelector(selectTasksSlice);
+  const currentProjectTasksList = tasksStateSlice.tasks;
 
-  const tasksInProgress: Task_Type[] | undefined =
-    activeProjectDetails?.tasks?.in_process;
+  const tasksTodo: Task_Type[] = currentProjectTasksList.filter((taskInfo) => {
+    return taskInfo.status === 'to_do';
+  });
 
-  const tasksCompleted: Task_Type[] | undefined =
-    activeProjectDetails?.tasks?.completed;
+  const tasksInProgress: Task_Type[] = currentProjectTasksList.filter(
+    (taskInfo) => {
+      return taskInfo.status === 'in_progress';
+    }
+  );
 
-  useEffect(() => {
-    console.log('Детали выбранного проекта:', activeProjectDetails);
-  }, [selectedProjectId]);
+  const tasksCompleted: Task_Type[] = currentProjectTasksList.filter(
+    (taskInfo) => {
+      return taskInfo.status === 'completed';
+    }
+  );
 
   // Открыть меню опций задачи:
   // --------------------------
@@ -49,6 +62,12 @@ const ActiveProjectDetails = () => {
     setTaskOptionsMenuOpenedId((prevId: string | null) => {
       return prevId === id ? null : id;
     });
+  };
+
+  // Добавление новой задачи:
+  // --------------------------
+  const handleAddNewTask = () => {
+    dispatch(addNewTask(tasks_URL));
   };
 
   return (
@@ -88,6 +107,7 @@ const ActiveProjectDetails = () => {
           className="mt-auto mx-auto p-3 w-[50%] text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
           children="Создать задачу"
           onClick={() => {
+            handleAddNewTask();
             console.log('Создаем задачу');
           }}
         />

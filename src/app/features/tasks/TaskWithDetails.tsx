@@ -1,10 +1,16 @@
+import { useSelector, useDispatch } from 'react-redux';
+
 import { BsThreeDotsVertical } from 'react-icons/bs';
 
 import { LuEye } from 'react-icons/lu';
 import { LuMessageSquareMore } from 'react-icons/lu';
 import { LuPaperclip } from 'react-icons/lu';
 
+import { AppDispatch } from '../../redux/store';
+import { changeTaskStatus } from '../../redux/slices/TasksSlice';
+
 interface TaskWithDetailsProps_Type {
+  taskId: string;
   className?: string;
   type: string;
   title: string;
@@ -15,6 +21,7 @@ interface TaskWithDetailsProps_Type {
 }
 
 const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
+  taskId,
   className,
   type,
   title,
@@ -22,6 +29,14 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
   isOptionsMenuOpened,
   toggleTaskOptionsMenu,
 }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const taskStatusValues: string[] = ['to_do', 'in_progress', 'completed'];
+
+  const handleChangeTaskStatus = (taskId: string, taskStatus: string) => {
+    toggleTaskOptionsMenu();
+    dispatch(changeTaskStatus({ taskId, taskStatus }));
+  };
+
   return (
     <li className="relative p-4 flex flex-col gap-3 rounded-2xl elem-shadow">
       <div className="flex gap-2 items-center justify-between">
@@ -56,9 +71,33 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
       </div>
       {isOptionsMenuOpened ? (
         <ul className="absolute z-10 top-[50px] right-[15px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
-          <li className="cursor-pointer hover:underline">К выполнению</li>
-          <li className="cursor-pointer hover:underline">В процессе</li>
-          <li className="cursor-pointer hover:underline">Завершить</li>
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              handleChangeTaskStatus(taskId, taskStatusValues[0]);
+              console.log('Задача для выполнения');
+            }}
+          >
+            К выполнению
+          </li>
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              handleChangeTaskStatus(taskId, taskStatusValues[1]);
+              console.log('Задача взята в работу');
+            }}
+          >
+            В процессе
+          </li>
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              handleChangeTaskStatus(taskId, taskStatusValues[2]);
+              console.log('Задача завершена');
+            }}
+          >
+            Завершить
+          </li>
           <li
             className="cursor-pointer hover:underline"
             onClick={() => {

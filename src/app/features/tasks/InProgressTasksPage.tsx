@@ -55,6 +55,7 @@ const InProgressTasksPage: React.FC<InProgressTasksPageProps_Type> = ({
 
               return (
                 <TaskWithDetails
+                  taskId={taskInfo.id}
                   key={taskInfo.id}
                   className={taskTypeColors[taskTypeColor]}
                   type={taskInfo.type}
