@@ -1,11 +1,13 @@
-import { IoPersonSharp } from 'react-icons/io5';
-import { FaChevronDown } from 'react-icons/fa6';
-
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { IoPersonCircleOutline } from 'react-icons/io5';
 
 import { User_Type } from '../../../entities/User_Type.ts';
+
+import Loader from '../../../shared/components/Loader.tsx';
 import User from './User';
+
+import { selectUsersSlice } from '../../redux/slices/usersSlice.ts';
 
 interface UsersList_Props {
   users: User_Type[];
@@ -13,6 +15,8 @@ interface UsersList_Props {
 
 const UsersList: React.FC<UsersList_Props> = ({ users }) => {
   const [openedUserMenuId, setOpenedUserMenuId] = useState<string | null>(null);
+  const usersSliceState = useSelector(selectUsersSlice);
+  const isUsersDataLoading: boolean = usersSliceState.isLoadingViaAPI;
 
   const handleSetOpenedUserMenuId = (id: string) => {
     setOpenedUserMenuId((prevId) => {
@@ -21,7 +25,7 @@ const UsersList: React.FC<UsersList_Props> = ({ users }) => {
   };
 
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className="h-[215px] flex flex-col gap-1 overflow-y-auto">
       {users.length > 0 ? (
         users.map((userInfo) => {
           return (
@@ -34,9 +38,15 @@ const UsersList: React.FC<UsersList_Props> = ({ users }) => {
           );
         })
       ) : (
-        <div className="flex flex-col gap-3 items-center">
-          <IoPersonCircleOutline className="text-[150px] text-[#e2e2e2]" />
-          <h2 className="text-center">Список пользователей пуст</h2>
+        <div className="m-auto flex flex-col gap-3 items-center">
+          {isUsersDataLoading ? (
+            <Loader />
+          ) : (
+            <>
+              <IoPersonCircleOutline className="text-[150px] text-[#e2e2e2]" />
+              <h2 className="text-center">Список пользователей пуст</h2>
+            </>
+          )}
         </div>
       )}
     </ul>

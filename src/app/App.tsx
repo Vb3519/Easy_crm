@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+// React-icons:
 import { SiCivicrm } from 'react-icons/si';
 import { IoPersonCircleOutline } from 'react-icons/io5';
 import { PiGearSix } from 'react-icons/pi';
@@ -8,19 +11,29 @@ import { MdOutlineEmail } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FaTelegramPlane } from 'react-icons/fa';
 
+import { AppDispatch } from './redux/store';
+import { selectProjectsSlice } from './redux/slices/projectsSlice/projectsSlice';
+
 // UI:
 import Button from '../shared/ui/Button';
 
 import ActiveProjectDetails from './features/projects/ActiveProjectDetails';
+import EmptyProjectDetails from './features/projects/EmptyProjectDetails';
 import GeneralProjectsList from './features/projects/GeneralProjectsList';
 
 import UsersPage from './features/users/UsersPage';
 
 const App = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const projectsStateSlice = useSelector(selectProjectsSlice);
+  const selectedProjectId: string | null = projectsStateSlice.selectedProjectId;
+
   const [isProjectsPageOpened, setIsProjectsPageOpened] =
     useState<boolean>(true);
   const [isUsersPageOpened, setIsUsersPageOpened] = useState<boolean>(true);
 
+  // Открыть / закрыть список проектов или пользователей:
+  // ----------------------------------------------------------
   const togglePropjectsPageVisibility = () => {
     setIsProjectsPageOpened(!isProjectsPageOpened);
   };
@@ -32,7 +45,7 @@ const App = () => {
   return (
     <div className="h-screen flex flex-col gap-4 bg-[#F5F5F5] overflow-y-auto">
       {/* ------------------------------ ХЕАДЕР: ------------------------------ */}
-      <header className="p-2 flex gap-2 flex-grow font-[inter] flex-wrap justify-between xs:px-4 lg:px-16">
+      <header className="p-2 flex gap-2 flex-grow font-[inter] flex-wrap justify-between xs:px-4 lg:px-8">
         <div className="flex gap-3 items-center">
           <div className="w-fit p-2 rounded-xl bg-blue-500 cursor-pointer">
             <SiCivicrm className="text-[30px] text-[whitesmoke]" />
@@ -68,7 +81,7 @@ const App = () => {
         </div>
       </header>
       {/* ------------------------------ МЕИН: ------------------------------ */}
-      <main className="font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-16">
+      <main className="font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-8">
         <div className="p-2 flex gap-2 xs:px-4 md:hidden">
           <Button
             className="bg-blue-500 text-[whitesmoke]"
@@ -88,16 +101,16 @@ const App = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-4 xs:px-4 md:basis-[40%] md:px-0 xl:basis-[25%]">
+        <div className="flex flex-col gap-4 xs:px-4 md:basis-[45%] md:px-0 xl:basis-[30%] 2xl:basis-[20%]">
           {isUsersPageOpened ? <UsersPage /> : null}
           {isProjectsPageOpened ? <GeneralProjectsList /> : null}
         </div>
 
-        <ActiveProjectDetails />
+        {selectedProjectId ? <ActiveProjectDetails /> : <EmptyProjectDetails />}
       </main>
 
       {/* ------------------------------ ФУТЕР: ------------------------------ */}
-      <footer className="font-[inter] p-2 flex flex-col gap-4 flex-grow xs:px-4 lg:px-16">
+      <footer className="font-[inter] p-2 flex flex-col gap-4 flex-grow xs:px-4 lg:px-8">
         <div className="flex flex-col gap-2 xs:flex-row xs:items-center">
           <h2 className="font-bold text-xl text-gray-300">Easy CRM</h2>
           <a

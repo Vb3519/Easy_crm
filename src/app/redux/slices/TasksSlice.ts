@@ -4,12 +4,14 @@ import { Task_Type } from '../../../entities/Task_Type';
 
 interface TasksState_Type {
   isLoadingViaAPI: boolean;
+  isChangingTaskStatusViaAPI: boolean;
   tasks: Task_Type[];
 }
 
 interface TasksSlice_Type {
   tasks: {
     isLoadingViaAPI: boolean;
+    isChangingTaskStatusViaAPI: boolean;
     tasks: Task_Type[];
   };
 }
@@ -148,6 +150,7 @@ export const changeTaskStatus = createAsyncThunk(
 
 const initialState: TasksState_Type = {
   isLoadingViaAPI: false,
+  isChangingTaskStatusViaAPI: false,
   tasks: [],
 };
 
@@ -191,13 +194,13 @@ const tasksSlice = createSlice({
     // Изменение статуса задачи:
     // -------------------------------------
     builder.addCase(changeTaskStatus.pending, (state) => {
-      state.isLoadingViaAPI = true;
+      state.isChangingTaskStatusViaAPI = true;
     });
 
     builder.addCase(changeTaskStatus.fulfilled, (state, action) => {
       const { id, status } = action.payload;
 
-      state.isLoadingViaAPI = false;
+      state.isChangingTaskStatusViaAPI = false;
 
       const taskToEdit = state.tasks.find((taskInfo) => {
         return taskInfo.id === id;
@@ -209,7 +212,7 @@ const tasksSlice = createSlice({
     });
 
     builder.addCase(changeTaskStatus.rejected, (state) => {
-      state.isLoadingViaAPI = false;
+      state.isChangingTaskStatusViaAPI = false;
     });
   },
 });

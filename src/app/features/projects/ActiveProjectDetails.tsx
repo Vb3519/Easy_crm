@@ -71,7 +71,7 @@ const ActiveProjectDetails = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 xs:px-4 md:basis-[60%] md:px-0 xl:basis-[75%]">
+    <div className="flex flex-col gap-3 xs:px-4 md:basis-[55%] md:px-0 xl:basis-[70%] 2xl:basis-[80%]">
       <div className="h-full p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow">
         <h3 className="font-semibold text-lg leading-[25px]">
           {activeProjectDetails
@@ -86,7 +86,7 @@ const ActiveProjectDetails = () => {
           </ul>
         </nav>
 
-        <div className="flex flex-col gap-4 xl:flex-row">
+        <div className="flex flex-col gap-2 xl:flex-row">
           <TodoTasksPage
             tasksTodo={tasksTodo}
             taskWithOpenedMenuId={taskOptionsMenuOpenedId}

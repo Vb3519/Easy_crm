@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
 import { Task_Type } from '../../../entities/Task_Type';
@@ -6,8 +7,11 @@ import { Task_Type } from '../../../entities/Task_Type';
 import EmptyTask from './EmptyTask';
 import TaskWithDetails from './TaskWithDetails';
 
+import { selectTasksSlice } from '../../redux/slices/TasksSlice';
+import Loader from '../../../shared/components/Loader';
+
 interface InProgressTasksPageProps_Type {
-  tasksInProgress: Task_Type[] | undefined;
+  tasksInProgress: Task_Type[];
   taskWithOpenedMenuId: string | null;
   toggleTaskOptionsMenu: (id: string) => void;
 }
@@ -20,58 +24,75 @@ const InProgressTasksPage: React.FC<InProgressTasksPageProps_Type> = ({
   const [isInProgressTasksListOpened, setIsInProgressTasksListOpened] =
     useState<boolean>(true);
 
+  const tasksSliceState = useSelector(selectTasksSlice);
+  const isTasksDataLoading: boolean = tasksSliceState.isLoadingViaAPI;
+
   const toggleTasksListVisibility = () => {
     setIsInProgressTasksListOpened(!isInProgressTasksListOpened);
   };
 
   return (
-    <div className="flex flex-col gap-4 basis-[33%]">
-      <div className="p-4 flex gap-2 items-center rounded-2xl elem-shadow border-2 border-transparent">
-        <span className="w-3 h-3 bg-blue-700 rounded-[50%]"></span>
-        <h5>В процессе</h5>
-        <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
-          {tasksInProgress ? tasksInProgress.length : 0}
-        </span>
-        <div
-          className="ml-auto w-7 h-7 flex items-center justify-center transition delay-100 ease-in cursor-pointer rounded-md hover:bg-[#e2e2e2]"
-          onClick={toggleTasksListVisibility}
-          title="Список задач"
-        >
-          {isInProgressTasksListOpened ? <FaChevronUp /> : <FaChevronDown />}
+    <div className="flex flex-col gap-1 basis-[33%]">
+      <div className="p-2">
+        <div className="p-2 flex gap-2 items-center rounded-2xl elem-shadow border-2 border-transparent">
+          <span className="w-3 h-3 bg-blue-700 rounded-[50%]"></span>
+          <h5>В процессе</h5>
+          <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
+            {isTasksDataLoading ? 0 : tasksInProgress.length}
+          </span>
+          <div
+            className="ml-auto w-7 h-7 flex items-center justify-center transition delay-100 ease-in cursor-pointer rounded-md hover:bg-[#e2e2e2]"
+            onClick={toggleTasksListVisibility}
+            title="Список задач"
+          >
+            {isInProgressTasksListOpened ? <FaChevronUp /> : <FaChevronDown />}
+          </div>
         </div>
       </div>
 
       {/* -------------- ЗАДАЧИ (В ПРОЦЕССЕ): --------------  */}
       {isInProgressTasksListOpened ? (
-        <ul className="flex flex-col gap-4">
-          {tasksInProgress && tasksInProgress.length > 0 ? (
-            tasksInProgress.map((taskInfo) => {
-              const taskTypeColor: string = taskInfo.type;
-              const taskTypeColors: any = {
-                'Разработка ПО': 'bg-amber-200',
-                'Веб-разработка': 'bg-blue-300',
-                'Анализ данных': 'bg-orange-300',
-              };
+        <ul className="h-[370px] p-2 flex flex-col gap-4 overflow-y-auto sm:h-[290px] md:h-[370px] xl:h-[700px]">
+          {tasksInProgress.length > 0 ? (
+            <>
+              {isTasksDataLoading ? (
+                <Loader />
+              ) : (
+                tasksInProgress.map((taskInfo) => {
+                  const taskTypeColor: string = taskInfo.type;
+                  const taskTypeColors: any = {
+                    'Разработка ПО': 'bg-amber-200',
+                    'Веб-разработка': 'bg-blue-300',
+                    'Анализ данных': 'bg-orange-300',
+                  };
 
-              return (
-                <TaskWithDetails
-                  taskId={taskInfo.id}
-                  key={taskInfo.id}
-                  className={taskTypeColors[taskTypeColor]}
-                  type={taskInfo.type}
-                  title={taskInfo.title}
-                  description={taskInfo.description}
-                  isOptionsMenuOpened={taskWithOpenedMenuId === taskInfo.id}
-                  toggleTaskOptionsMenu={() => {
-                    toggleTaskOptionsMenu(taskInfo.id);
-                  }}
-                />
-              );
-            })
+                  return (
+                    <TaskWithDetails
+                      taskId={taskInfo.id}
+                      key={taskInfo.id}
+                      className={taskTypeColors[taskTypeColor]}
+                      type={taskInfo.type}
+                      title={taskInfo.title}
+                      description={taskInfo.description}
+                      isOptionsMenuOpened={taskWithOpenedMenuId === taskInfo.id}
+                      toggleTaskOptionsMenu={() => {
+                        toggleTaskOptionsMenu(taskInfo.id);
+                      }}
+                    />
+                  );
+                })
+              )}
+            </>
           ) : (
-            <EmptyTask
-              text={'В данный момент Ваш список задач "В процессе" пуст'}
-            />
+            <>
+              {isTasksDataLoading ? (
+                <Loader />
+              ) : (
+                <EmptyTask
+                  text={'В данный момент Ваш список задач "В процессе" пуст'}
+                />
+              )}
+            </>
           )}
         </ul>
       ) : null}

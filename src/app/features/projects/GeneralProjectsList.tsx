@@ -7,6 +7,7 @@ import { Project_Type } from '../../../entities/Project_Type';
 import { AppDispatch } from '../../redux/store';
 import Project from './Project';
 import Button from '../../../shared/ui/Button';
+import Loader from '../../../shared/components/Loader';
 
 import {
   selectIsLoadingViaAPI,
@@ -52,11 +53,17 @@ const GeneralProjectsList = () => {
     });
   };
 
+  // Закрытие меню опций любого проекта (при смене активного проекта);
+  // ------------------------------
+  const closeOptionsMenu = () => {
+    setOpenedprojectMenuId(null);
+  };
+
   return (
     <div className="p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow xl:flex-grow">
       <h2 className="font-semibold text-2xl">Ваши проекты:</h2>
 
-      <ul className="flex flex-col gap-1">
+      <ul className="h-[190px] flex flex-col gap-1 overflow-y-auto">
         {projectsList.length > 0 ? (
           projectsList.map((projectInfo) => {
             return (
@@ -65,14 +72,21 @@ const GeneralProjectsList = () => {
                 projectInfo={projectInfo}
                 isProjectMenuOpened={openedprojectMenuId === projectInfo.id}
                 openOptionsMenu={toggleProjectOptionsMenu}
+                closeOptionsMenu={closeOptionsMenu}
                 deleteProject={handleDeleteProject}
               />
             );
           })
         ) : (
-          <div className="flex flex-col gap-3 items-center">
-            <AiOutlineProduct className="text-[150px] text-[#e2e2e2]" />
-            <h2 className="text-center">Список проектов пуст</h2>
+          <div className="m-auto flex flex-col gap-3 items-center">
+            {isLoadingViaAPI ? (
+              <Loader />
+            ) : (
+              <>
+                <AiOutlineProduct className="text-[150px] text-[#e2e2e2]" />
+                <h2 className="text-center">Список проектов пуст</h2>
+              </>
+            )}
           </div>
         )}
       </ul>

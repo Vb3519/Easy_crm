@@ -22,6 +22,7 @@ interface ProjectProps_Type {
   projectInfo: Project_Type;
   isProjectMenuOpened: boolean;
   openOptionsMenu: (id: string) => void;
+  closeOptionsMenu: () => void;
   deleteProject: (id: string) => void;
 }
 
@@ -29,6 +30,7 @@ const Project: React.FC<ProjectProps_Type> = ({
   projectInfo,
   isProjectMenuOpened,
   openOptionsMenu,
+  closeOptionsMenu,
   deleteProject,
 }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -52,40 +54,42 @@ const Project: React.FC<ProjectProps_Type> = ({
   };
 
   return (
-    <li className="flex">
+    <li className="w-full relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg">
       <button
+        className="flex items-center gap-2 cursor-pointer"
         disabled={isTasksDataLoading}
         onClick={() => {
           handleSetProjectIdAndLoadThisProjectTasks(projectInfo.id);
+          closeOptionsMenu();
         }}
         key={projectInfo.id}
-        className="w-full relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg cursor-pointer"
       >
         <GrProjects />
         <p>{projectInfo.title}</p>
-        <button
-          disabled={isTasksDataLoading}
-          className="ml-auto cursor-pointer"
-          onClick={() => {
-            openOptionsMenu(projectInfo.id);
-          }}
-        >
-          <BsThreeDotsVertical />
-        </button>
-        {isProjectMenuOpened ? (
-          <ul className="absolute z-10 top-[30px] right-[10px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
-            <li
-              className="cursor-pointer hover:underline"
-              onClick={() => {
-                deleteProject(projectInfo.id);
-                openOptionsMenu(projectInfo.id);
-              }}
-            >
-              Удалить
-            </li>
-          </ul>
-        ) : null}
       </button>
+
+      <button
+        disabled={isTasksDataLoading}
+        className="ml-auto cursor-pointer"
+        onClick={() => {
+          openOptionsMenu(projectInfo.id);
+        }}
+      >
+        <BsThreeDotsVertical />
+      </button>
+      {isProjectMenuOpened ? (
+        <ul className="absolute z-10 top-[30px] right-[10px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              deleteProject(projectInfo.id);
+              openOptionsMenu(projectInfo.id);
+            }}
+          >
+            Удалить
+          </li>
+        </ul>
+      ) : null}
     </li>
   );
 };
