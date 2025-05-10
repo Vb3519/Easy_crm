@@ -7,7 +7,7 @@ import { LuMessageSquareMore } from 'react-icons/lu';
 import { LuPaperclip } from 'react-icons/lu';
 
 import { AppDispatch } from '../../redux/store';
-import { changeTaskStatus } from '../../redux/slices/TasksSlice';
+import { changeTaskStatus, deleteTask } from '../../redux/slices/TasksSlice';
 
 interface TaskWithDetailsProps_Type {
   taskId: string;
@@ -32,9 +32,17 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
   const dispatch: AppDispatch = useDispatch();
   const taskStatusValues: string[] = ['to_do', 'in_progress', 'completed'];
 
+  // Изменение статуса задачи:
+  // -------------------------------
   const handleChangeTaskStatus = (taskId: string, taskStatus: string) => {
     toggleTaskOptionsMenu();
     dispatch(changeTaskStatus({ taskId, taskStatus }));
+  };
+
+  // Удаление задачи:
+  // -------------------------------
+  const handleDeleteTask = (id: string) => {
+    dispatch(deleteTask(id));
   };
 
   return (
@@ -101,7 +109,9 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
           <li
             className="cursor-pointer hover:underline"
             onClick={() => {
-              console.log('Клик ^_^');
+              handleDeleteTask(taskId);
+              toggleTaskOptionsMenu();
+              console.log('Задача удалена');
             }}
           >
             Удалить

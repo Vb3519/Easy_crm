@@ -14,6 +14,10 @@ import { FaTelegramPlane } from 'react-icons/fa';
 import { AppDispatch } from './redux/store';
 import { selectProjectsSlice } from './redux/slices/projectsSlice/projectsSlice';
 
+// Лейаут форм для добавления данных:
+import FormsLayout from './features/forms/FormsLayout';
+import { selectDataFormsSlice } from './redux/slices/dataFormsSlice';
+
 // UI:
 import Button from '../shared/ui/Button';
 
@@ -25,6 +29,9 @@ import UsersPage from './features/users/UsersPage';
 
 const App = () => {
   const dispatch: AppDispatch = useDispatch();
+
+  const formsStateSlice = useSelector(selectDataFormsSlice);
+
   const projectsStateSlice = useSelector(selectProjectsSlice);
   const selectedProjectId: string | null = projectsStateSlice.selectedProjectId;
 
@@ -44,6 +51,8 @@ const App = () => {
 
   return (
     <div className="h-screen flex flex-col gap-4 bg-[#F5F5F5] overflow-y-auto">
+      {formsStateSlice.isFormsLayoutVisible ? <FormsLayout /> : null}
+
       {/* ------------------------------ ХЕАДЕР: ------------------------------ */}
       <header className="p-2 flex gap-2 flex-grow font-[inter] flex-wrap justify-between xs:px-4 lg:px-8">
         <div className="flex gap-3 items-center">

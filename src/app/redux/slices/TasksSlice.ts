@@ -148,6 +148,47 @@ export const changeTaskStatus = createAsyncThunk(
   }
 );
 
+// -------------------------------------
+// Удаление задачи:
+// -------------------------------------
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (taskId: string, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 2000);
+    });
+
+    try {
+      const deleteTaskResponse: Response = await fetch(
+        `http://localhost:3001/tasks/${taskId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (deleteTaskResponse.ok) {
+        const deletedTask: Task_Type = await deleteTaskResponse.json();
+        console.log('Удалена задача:', deletedTask);
+        return deletedTask;
+      } else {
+        console.log(
+          `Delete Task HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
+        );
+        return thunkAPI.rejectWithValue(
+          `Delete Task HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      console.log(`Delete Task Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Delete Task Error: ${(error as Error).message}`
+      );
+    }
+  }
+);
+
 const initialState: TasksState_Type = {
   isLoadingViaAPI: false,
   isChangingTaskStatusViaAPI: false,
@@ -213,6 +254,26 @@ const tasksSlice = createSlice({
 
     builder.addCase(changeTaskStatus.rejected, (state) => {
       state.isChangingTaskStatusViaAPI = false;
+    });
+
+    // Удаление задачи:
+    // -------------------------------------
+    builder.addCase(deleteTask.pending, (state) => {
+      return { ...state, isChangingTaskStatusViaAPI: true };
+    });
+
+    builder.addCase(deleteTask.fulfilled, (state, action) => {
+      return {
+        ...state,
+        isChangingTaskStatusViaAPI: false,
+        tasks: state.tasks.filter((taskInfo) => {
+          return taskInfo.id !== action.payload.id;
+        }),
+      };
+    });
+
+    builder.addCase(deleteTask.rejected, (state) => {
+      return { ...state, isChangingTaskStatusViaAPI: false };
     });
   },
 });

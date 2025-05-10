@@ -11,8 +11,9 @@ import {
   selectUsersSlice,
   selectUsers,
   fetchUsersData,
-  addNewUserData,
 } from '../../redux/slices/usersSlice.ts';
+
+import { toggleUserFormVisibility } from '../../redux/slices/dataFormsSlice.ts';
 
 import { AppDispatch } from '../../redux/store.ts';
 
@@ -30,9 +31,9 @@ const UsersPage = () => {
     dispatch(fetchUsersData(users_URL));
   };
 
-  // Добавление нового пользователя:
-  const handleAddNewUser = () => {
-    dispatch(addNewUserData(users_URL));
+  // Открыть форму для добавления нового пользователя:
+  const handleAddNewUserFormVisibility = () => {
+    dispatch(toggleUserFormVisibility());
   };
 
   return (
@@ -54,7 +55,8 @@ const UsersPage = () => {
         className="p-3 text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
         children="Добавить Пользователя"
         onClick={() => {
-          handleAddNewUser();
+          handleAddNewUserFormVisibility();
+          console.log('Форма для добавления нового пользователя открыта');
         }}
       />
     </div>

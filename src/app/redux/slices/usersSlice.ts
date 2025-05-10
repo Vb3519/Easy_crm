@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { User_Type } from '../../../entities/User_Type.ts';
 import createNewUser from '../../../shared/utils/createNewUser.ts';
-import { build } from 'vite';
-
 interface UsersState_Type {
   users: User_Type[];
   isLoadingViaAPI: boolean;
@@ -70,15 +68,17 @@ export const fetchUsersData = createAsyncThunk<User_Type[], string>(
 // ---------------------------------------
 export const addNewUserData = createAsyncThunk(
   'users/addNewUser',
-  async (url: string, thunkAPI) => {
+  async (payload: { userName: string; url: string }, thunkAPI) => {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve('done');
       }, 2000);
     });
 
+    const { userName, url } = payload;
+
     // Создание нового пользователя:
-    const newUser: User_Type = createNewUser('Viktor');
+    const newUser: User_Type = createNewUser(userName);
 
     try {
       // Запрос к серверу и проверка, добавлен ли уже пользователь:

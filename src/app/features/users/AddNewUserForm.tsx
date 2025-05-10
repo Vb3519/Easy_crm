@@ -1,0 +1,96 @@
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { RxCross2 } from 'react-icons/rx';
+
+import { User_Type } from '../../../entities/User_Type';
+import { AppDispatch } from '../../redux/store';
+
+import { addNewUserData } from '../../redux/slices/usersSlice';
+
+import {
+  selectDataFormsSlice,
+  toggleUserFormVisibility,
+} from '../../redux/slices/dataFormsSlice';
+
+import Form from '../../../shared/ui/Form';
+import Button from '../../../shared/ui/Button';
+
+const AddNewUserForm = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [userName, setUserName] = useState<string>('');
+
+  const users_URL: string = 'http://localhost:3001/users';
+
+  // Обработка состояния имени пользователя:
+  // --------------------------------------------
+  const handleSetUserName = (userNameValue: string) => {
+    setUserName(userNameValue);
+  };
+
+  // Добавление пользователя в базу данных:
+  // --------------------------------------------
+  const handleAddNewUser = (userNameValue: string) => {
+    if (userNameValue.length > 0) {
+      dispatch(
+        addNewUserData({ userName: userNameValue.trim(), url: users_URL })
+      );
+      setUserName('');
+      console.log('Добавлен новый пользователь');
+    } else {
+      alert('Укажите имя пользователя!');
+      return;
+    }
+  };
+
+  // Закрытие формы и лейаута для нее:
+  // --------------------------------------------
+  const closeAddNewUserForm = () => {
+    dispatch(toggleUserFormVisibility());
+  };
+
+  return (
+    <Form>
+      <div className="flex items-center justify-between">
+        <h2 className="font-semibold">Добавление нового пользователя:</h2>
+        <button
+          type="button"
+          aria-label="Закрыть форму"
+          onClick={() => {
+            console.log('Форма закрыта');
+            closeAddNewUserForm();
+          }}
+          className="w-7 h-7 flex items-center justify-center transition delay-100 ease-in cursor-pointer rounded-md hover:bg-[#e2e2e2]"
+        >
+          <RxCross2 className="text-xl text-gray-600" />
+        </button>
+      </div>
+      <fieldset className="flex flex-col gap-4">
+        <label>Имя пользователя:</label>
+        <input
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            const userName: string = event.target.value;
+            handleSetUserName(userName);
+          }}
+          value={userName}
+          name="name"
+          required
+          className="p-3 text-sm rounded-lg bg-[#e2e2e2] outline-none"
+          type="text"
+          placeholder="Имя пользователя..."
+          maxLength={15}
+        />
+        <Button
+          className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
+          type="submit"
+          children="Отправить"
+          onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+            event.preventDefault();
+            handleAddNewUser(userName);
+          }}
+        />
+      </fieldset>
+    </Form>
+  );
+};
+
+export default AddNewUserForm;
