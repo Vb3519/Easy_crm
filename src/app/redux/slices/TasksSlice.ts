@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Task_Type } from '../../../entities/Task_Type';
 
+import createNewTask from '../../../shared/utils/createNewTask';
+
 interface TasksState_Type {
   isLoadingViaAPI: boolean;
   isChangingTaskStatusViaAPI: boolean;
@@ -60,22 +62,25 @@ export const loadActiveProjectTasks = createAsyncThunk(
 // -------------------------------
 export const addNewTask = createAsyncThunk(
   'tasks/addNewTask',
-  async (url: string, thunkAPI) => {
+  async (
+    payload: {
+      url: string;
+      projectId: string;
+      title: string;
+      description: string;
+      type: string;
+    },
+    thunkAPI
+  ) => {
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve('done');
       }, 2000);
     });
 
-    // -------------------------------------------------------- сделать функцию, которая формирует задачу
-    const newTask: Task_Type = {
-      id: '8',
-      projectId: '2', // ------------------------------------------- вытаскивать id активного проекта из селектора в слайсе проектов
-      type: 'Веб-разработка',
-      title: '!!!Тестовая задача!',
-      description: 'Описание тестовой задачи по веб-разработке',
-      status: 'to_do',
-    };
+    const { url, projectId, title, description, type } = payload;
+
+    const newTask = createNewTask(projectId, title, description, type);
 
     try {
       const addNewTaskResponse: Response = await fetch(url, {

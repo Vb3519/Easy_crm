@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+// State:
 import { selectProjectsSlice } from '../../redux/slices/projectsSlice/projectsSlice';
-import { selectTasksSlice } from '../../redux/slices/TasksSlice';
-import { addNewTask } from '../../redux/slices/TasksSlice';
-
-import Button from '../../../shared/ui/Button';
+import { selectTasksSlice } from '../../redux/slices/tasksSlice';
 
 // Types:
 import { AppDispatch } from '../../redux/store';
@@ -21,8 +19,6 @@ const ActiveProjectDetails = () => {
   const [taskOptionsMenuOpenedId, setTaskOptionsMenuOpenedId] = useState<
     string | null
   >(null);
-
-  const tasks_URL: string = 'http://localhost:3001/tasks';
 
   // Проекты:
   // --------------------------
@@ -64,12 +60,6 @@ const ActiveProjectDetails = () => {
     });
   };
 
-  // Добавление новой задачи:
-  // --------------------------
-  const handleAddNewTask = () => {
-    dispatch(addNewTask(tasks_URL));
-  };
-
   return (
     <div className="flex flex-col gap-3 xs:px-4 md:basis-[55%] md:px-0 xl:basis-[70%] 2xl:basis-[80%]">
       <div className="h-full p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow">
@@ -103,14 +93,6 @@ const ActiveProjectDetails = () => {
             toggleTaskOptionsMenu={toggleTaskOptionsMenuVisibility}
           />
         </div>
-        <Button
-          className="mt-auto mx-auto p-3 w-[50%] text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
-          children="Создать задачу"
-          onClick={() => {
-            handleAddNewTask();
-            console.log('Создаем задачу');
-          }}
-        />
       </div>
     </div>
   );

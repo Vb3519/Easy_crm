@@ -7,7 +7,7 @@ import { LuMessageSquareMore } from 'react-icons/lu';
 import { LuPaperclip } from 'react-icons/lu';
 
 import { AppDispatch } from '../../redux/store';
-import { changeTaskStatus, deleteTask } from '../../redux/slices/TasksSlice';
+import { changeTaskStatus, deleteTask } from '../../redux/slices/tasksSlice';
 
 interface TaskWithDetailsProps_Type {
   taskId: string;

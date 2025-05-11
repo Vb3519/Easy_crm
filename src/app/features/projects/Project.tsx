@@ -8,6 +8,7 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 import { Project_Type } from '../../../entities/Project_Type';
 import { AppDispatch } from '../../redux/store';
 
+// State:
 import {
   selectProjectsSlice,
   setActiveProjectId,
@@ -16,7 +17,9 @@ import {
 import {
   loadActiveProjectTasks,
   selectTasksSlice,
-} from '../../redux/slices/TasksSlice';
+} from '../../redux/slices/tasksSlice';
+
+import { toggleTaskFormVisibility } from '../../redux/slices/dataFormsSlice';
 
 interface ProjectProps_Type {
   projectInfo: Project_Type;
@@ -35,6 +38,7 @@ const Project: React.FC<ProjectProps_Type> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const projectStateSlice = useSelector(selectProjectsSlice);
+  const selectedProjectId: string | null = projectStateSlice.selectedProjectId;
   const tasksStateSlice = useSelector(selectTasksSlice);
   const isTasksDataLoading: boolean = tasksStateSlice.isLoadingViaAPI;
 
@@ -53,8 +57,21 @@ const Project: React.FC<ProjectProps_Type> = ({
     dispatch(loadActiveProjectTasks(projectId));
   };
 
+  // Отображение формы добавления новой задачи:
+  // ------------------------------------------------
+  const handleToggleTaskFormVisibility = () => {
+    if (!selectedProjectId) {
+      alert('Пожалуйста выберите активный проект!');
+      closeOptionsMenu();
+      return;
+    }
+
+    dispatch(toggleTaskFormVisibility());
+    closeOptionsMenu();
+  };
+
   return (
-    <li className="w-full relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg">
+    <li className="text-sm w-full relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg md:text-[16px]">
       <button
         className="flex items-center gap-2 cursor-pointer"
         disabled={isTasksDataLoading}
@@ -79,6 +96,14 @@ const Project: React.FC<ProjectProps_Type> = ({
       </button>
       {isProjectMenuOpened ? (
         <ul className="absolute z-10 top-[30px] right-[10px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
+          <li
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              handleToggleTaskFormVisibility();
+            }}
+          >
+            Добавить задачу
+          </li>
           <li
             className="cursor-pointer hover:underline"
             onClick={() => {

@@ -25,7 +25,7 @@ const User: React.FC<User_Props> = ({
   };
 
   return (
-    <li className="relative p-2 flex items-center gap-4 border-2 border-gray-200 rounded-lg">
+    <li className="text-sm relative p-2 flex items-center gap-4 border-2 border-gray-200 rounded-lg md:text-[16px]">
       <IoPersonSharp className="text-[30px] text-[#cccccc]" title="Аватар" />
       <div>
         <p>{userInfo.name}</p>

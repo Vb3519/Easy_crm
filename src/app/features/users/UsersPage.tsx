@@ -21,7 +21,6 @@ const UsersPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const usersSliceState = useSelector(selectUsersSlice);
   const users: User_Type[] = useSelector(selectUsers);
-  console.log('Текущий список пользователей:', users);
 
   const users_URL: string = 'http://localhost:3001/users';
   // const users_URL: string = 'https://easy-crm-3ii3.onrender.com/users';
@@ -36,20 +35,18 @@ const UsersPage = () => {
     dispatch(toggleUserFormVisibility());
   };
 
+  useEffect(() => {
+    if (users.length === 0) {
+      handleFetchUsersData();
+    }
+  }, []);
+
   return (
     <div className="p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl xl:flex-grow container-shadow">
-      <h2 className="font-semibold text-2xl">Пользователи:</h2>
+      <h2 className="font-semibold md:text-lg">Пользователи:</h2>
 
       <UsersList users={users} />
-      <Button
-        disabled={usersSliceState.isLoadingViaAPI}
-        className="p-3 text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
-        children="Загрузить пользователей"
-        onClick={() => {
-          console.log('Загружаем данные пользователей');
-          handleFetchUsersData();
-        }}
-      />
+
       <Button
         disabled={usersSliceState.isLoadingViaAPI}
         className="p-3 text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"

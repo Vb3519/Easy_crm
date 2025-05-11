@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Project_Type } from '../../../../entities/Project_Type';
 
+import createNewProject from '../../../../shared/utils/createNewProject';
+
 // ------------------------------
 // Общие функции (добавить в папку utils):
 // ------------------------------
@@ -52,21 +54,15 @@ export const loadProjectsData = createAsyncThunk<Project_Type[], string>(
 // -------------------------------
 // Добавление нового проекта:
 // -------------------------------
-export const addNewProject = createAsyncThunk<Project_Type | undefined, string>(
+export const addNewProject = createAsyncThunk(
   'projects/addnewProject',
-  async (url: string, thunkAPI) => {
-    // -------------------------------------------------------------------- тут добавить функцию, которая создает проект
-    const newProjectData: Project_Type = {
-      id: '4',
-      title: 'Название проекта №4',
-      tasks: {
-        to_do: [],
-        in_process: [],
-        completed: [],
-      },
-    };
-
+  async (payload: { title: string; url: string }, thunkAPI) => {
     await serverDelayImitation(2000);
+
+    const { title, url } = payload;
+
+    // Создание нового проекта:
+    const newProjectData = createNewProject(title);
 
     try {
       const currentProjects: Project_Type[] = (await fetchData(

@@ -1,23 +1,26 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+// React-icons:
 import { RxCross2 } from 'react-icons/rx';
 
+// Types:
 import { User_Type } from '../../../entities/User_Type';
 import { AppDispatch } from '../../redux/store';
 
+// State:
+import { selectUsers } from '../../redux/slices/usersSlice';
 import { addNewUserData } from '../../redux/slices/usersSlice';
+import { toggleUserFormVisibility } from '../../redux/slices/dataFormsSlice';
 
-import {
-  selectDataFormsSlice,
-  toggleUserFormVisibility,
-} from '../../redux/slices/dataFormsSlice';
-
+// UI:
 import Form from '../../../shared/ui/Form';
 import Button from '../../../shared/ui/Button';
 
 const AddNewUserForm = () => {
   const dispatch: AppDispatch = useDispatch();
   const [userName, setUserName] = useState<string>('');
+  const users: User_Type[] = useSelector(selectUsers);
 
   const users_URL: string = 'http://localhost:3001/users';
 
@@ -30,12 +33,19 @@ const AddNewUserForm = () => {
   // Добавление пользователя в базу данных:
   // --------------------------------------------
   const handleAddNewUser = (userNameValue: string) => {
+    if (users.length >= 6) {
+      alert('Добавлено максимальное количество пользователей!');
+      setUserName('');
+      closeAddNewUserForm();
+      return;
+    }
+
     if (userNameValue.length > 0) {
       dispatch(
         addNewUserData({ userName: userNameValue.trim(), url: users_URL })
       );
       setUserName('');
-      console.log('Добавлен новый пользователь');
+      closeAddNewUserForm();
     } else {
       alert('Укажите имя пользователя!');
       return;
@@ -56,7 +66,6 @@ const AddNewUserForm = () => {
           type="button"
           aria-label="Закрыть форму"
           onClick={() => {
-            console.log('Форма закрыта');
             closeAddNewUserForm();
           }}
           className="w-7 h-7 flex items-center justify-center transition delay-100 ease-in cursor-pointer rounded-md hover:bg-[#e2e2e2]"

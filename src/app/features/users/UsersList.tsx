@@ -44,7 +44,9 @@ const UsersList: React.FC<UsersList_Props> = ({ users }) => {
           ) : (
             <>
               <IoPersonCircleOutline className="text-[150px] text-[#e2e2e2]" />
-              <h2 className="text-center">Список пользователей пуст</h2>
+              <h2 className="text-center text-sm md:text-[16px]">
+                Список пользователей пуст
+              </h2>
             </>
           )}
         </div>

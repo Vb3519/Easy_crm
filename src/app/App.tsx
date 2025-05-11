@@ -50,11 +50,9 @@ const App = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col gap-4 bg-[#F5F5F5] overflow-y-auto">
-      {formsStateSlice.isFormsLayoutVisible ? <FormsLayout /> : null}
-
-      {/* ------------------------------ ХЕАДЕР: ------------------------------ */}
-      <header className="p-2 flex gap-2 flex-grow font-[inter] flex-wrap justify-between xs:px-4 lg:px-8">
+    <div className="h-screen flex flex-col justify-between gap-4 bg-[#F5F5F5] overflow-y-auto">
+      {/* ------------------------------ HEADER: ------------------------------ */}
+      <header className="p-2 flex gap-2 font-[inter] flex-wrap justify-between xs:px-4 lg:px-8">
         <div className="flex gap-3 items-center">
           <div className="w-fit p-2 rounded-xl bg-blue-500 cursor-pointer">
             <SiCivicrm className="text-[30px] text-[whitesmoke]" />
@@ -69,7 +67,10 @@ const App = () => {
               className="text-[45px] text-[#cccccc]"
               title="Аватар"
             />
-            <p className="font-semibold text-sm" title="Имя пользователя">
+            <p
+              className="font-semibold text-sm md:text-[16px]"
+              title="Имя пользователя"
+            >
               User Name
             </p>
           </div>
@@ -89,15 +90,14 @@ const App = () => {
           </ul>
         </div>
       </header>
-      {/* ------------------------------ МЕИН: ------------------------------ */}
-      <main className="font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-8">
+      {/* ------------------------------ MAIN: ------------------------------ */}
+      <main className="mb-auto font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-8">
         <div className="p-2 flex gap-2 xs:px-4 md:hidden">
           <Button
             className="bg-blue-500 text-[whitesmoke]"
             children="Проекты"
             onClick={() => {
               togglePropjectsPageVisibility();
-              console.log('Открываем проекты');
             }}
           />
           <Button
@@ -105,7 +105,6 @@ const App = () => {
             children="Пользователи"
             onClick={() => {
               toggleUsersPageVisibility();
-              console.log('Открываем список пользователей');
             }}
           />
         </div>
@@ -118,8 +117,8 @@ const App = () => {
         {selectedProjectId ? <ActiveProjectDetails /> : <EmptyProjectDetails />}
       </main>
 
-      {/* ------------------------------ ФУТЕР: ------------------------------ */}
-      <footer className="font-[inter] p-2 flex flex-col gap-4 flex-grow xs:px-4 lg:px-8">
+      {/* ------------------------------ FOOTER: ------------------------------ */}
+      <footer className="font-[inter] text-sm p-2 flex flex-col gap-4 xs:px-4 lg:px-8 md:text-[16px]">
         <div className="flex flex-col gap-2 xs:flex-row xs:items-center">
           <h2 className="font-bold text-xl text-gray-300">Easy CRM</h2>
           <a
@@ -160,6 +159,8 @@ const App = () => {
           </span>
         </div>
       </footer>
+
+      {formsStateSlice.isFormsLayoutVisible ? <FormsLayout /> : null}
     </div>
   );
 };

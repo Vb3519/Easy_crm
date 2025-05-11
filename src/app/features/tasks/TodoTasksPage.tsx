@@ -8,7 +8,7 @@ import { Task_Type } from '../../../entities/Task_Type';
 import EmptyTask from './EmptyTask';
 import TaskWithDetails from './TaskWithDetails';
 
-import { selectTasksSlice } from '../../redux/slices/TasksSlice';
+import { selectTasksSlice } from '../../redux/slices/tasksSlice';
 import Loader from '../../../shared/components/Loader';
 
 interface TodoTasksPageProps_Type {

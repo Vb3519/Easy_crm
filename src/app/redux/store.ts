@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import usersReducer from './slices/usersSlice';
 import projectsReducer from './slices/projectsSlice/projectsSlice';
-import tasksReducer from './slices/TasksSlice';
+import tasksReducer from './slices/tasksSlice';
 import formsReducer from './slices/dataFormsSlice';
 
 const store = configureStore({
