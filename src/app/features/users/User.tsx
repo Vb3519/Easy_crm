@@ -5,7 +5,10 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
 import { User_Type } from '../../../entities/User_Type.ts';
 import { AppDispatch } from '../../redux/store.ts';
-import { deleteUserData } from '../../redux/slices/usersSlice.ts';
+import {
+  deleteUserData,
+  selectUsersSlice,
+} from '../../redux/slices/usersSlice.ts';
 
 interface User_Props {
   userInfo: User_Type;
@@ -19,6 +22,7 @@ const User: React.FC<User_Props> = ({
   openOptionsMenu,
 }) => {
   const dispatch: AppDispatch = useDispatch();
+  const usersSliceState = useSelector(selectUsersSlice);
 
   const handleDeleteUserData = (userId: string) => {
     dispatch(deleteUserData(userId));
@@ -31,22 +35,23 @@ const User: React.FC<User_Props> = ({
         <p>{userInfo.name}</p>
         <p>{userInfo.added_at}</p>
       </div>
-      <span
+      <button
+        disabled={usersSliceState.isLoadingViaAPI}
         className="ml-auto"
         onClick={() => {
           openOptionsMenu(userInfo.id);
         }}
       >
         {isMenuOpened ? (
-          <FaChevronUp className="mr-2 cursor-pointer" />
+          <FaChevronUp className="mr-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500" />
         ) : (
-          <FaChevronDown className="mr-2 cursor-pointer" />
+          <FaChevronDown className="mr-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500" />
         )}
-      </span>
+      </button>
       {isMenuOpened ? (
         <ul className="absolute z-10 top-[45px] right-[10px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
           <li
-            className="cursor-pointer hover:underline"
+            className="cursor-pointer transition duration-200 ease-in hover:text-blue-500"
             onClick={() => {
               handleDeleteUserData(userInfo.id);
               openOptionsMenu(userInfo.id);
@@ -54,7 +59,9 @@ const User: React.FC<User_Props> = ({
           >
             Удалить
           </li>
-          <li className="cursor-pointer hover:underline">Изменить имя</li>
+          <li className="cursor-pointer transition duration-200 ease-in hover:text-blue-500">
+            Изменить имя
+          </li>
         </ul>
       ) : (
         ''

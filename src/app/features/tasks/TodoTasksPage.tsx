@@ -8,7 +8,10 @@ import { Task_Type } from '../../../entities/Task_Type';
 import EmptyTask from './EmptyTask';
 import TaskWithDetails from './TaskWithDetails';
 
-import { selectTasksSlice } from '../../redux/slices/tasksSlice';
+import {
+  selectTasksSlice,
+  setSelectedTaskId,
+} from '../../redux/slices/tasksSlice';
 import Loader from '../../../shared/components/Loader';
 
 interface TodoTasksPageProps_Type {
@@ -27,6 +30,7 @@ const TodoTasksPage: React.FC<TodoTasksPageProps_Type> = ({
 
   const tasksSliceState = useSelector(selectTasksSlice);
   const isTasksDataLoading: boolean = tasksSliceState.isLoadingViaAPI;
+  const isAddingNewTask: boolean = tasksSliceState.isAddingNewTaskViaApi;
 
   // Открыть список задач со статусом "к выполнению":
   const toggleTasksListVisibility = () => {
@@ -36,7 +40,11 @@ const TodoTasksPage: React.FC<TodoTasksPageProps_Type> = ({
   return (
     <div className="flex flex-col gap-1 basis-[33%]">
       <div className="p-2">
-        <div className="p-2 flex gap-2 items-center rounded-2xl elem-shadow border-2 border-transparent">
+        <div
+          className={`p-2 flex gap-2 items-center rounded-2xl elem-shadow border-2 border-transparent ${
+            isAddingNewTask ? 'animate-pulse' : ''
+          }`}
+        >
           <span className="w-3 h-3 bg-orange-700 rounded-[50%]"></span>
           <h5>К выполнению</h5>
           <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // React-icons:
 import { RxCross2 } from 'react-icons/rx';
@@ -8,7 +8,10 @@ import { RxCross2 } from 'react-icons/rx';
 import { AppDispatch } from '../../redux/store';
 
 // State:
-import { addNewProject } from '../../redux/slices/projectsSlice/projectsSlice';
+import {
+  addNewProject,
+  selectProjects,
+} from '../../redux/slices/projectsSlice/projectsSlice';
 import { toggleProjectFormVisibility } from '../../redux/slices/dataFormsSlice';
 
 // UI:
@@ -19,6 +22,7 @@ const AddNewProjectForm = () => {
   const dispatch: AppDispatch = useDispatch();
   const [projectTitle, setProjectTitle] = useState<string>('');
 
+  const projectsList = useSelector(selectProjects);
   const projects_URL: string = 'http://localhost:3001/projects';
 
   // Обработка состояния названия проекта:
@@ -30,6 +34,13 @@ const AddNewProjectForm = () => {
   // Добавление проекта в базу данных:
   // --------------------------------------------
   const handleAddNewProject = (projectTitleValue: string) => {
+    if (projectsList.length >= 6) {
+      alert('Добавлено максимальное количество проектов!');
+      setProjectTitle('');
+      closeAddNewProjectForm();
+      return;
+    }
+
     if (projectTitleValue.length > 0) {
       dispatch(
         addNewProject({ title: projectTitleValue.trim(), url: projects_URL })

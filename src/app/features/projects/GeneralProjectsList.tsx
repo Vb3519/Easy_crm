@@ -20,17 +20,23 @@ import {
   deleteSelectedProject,
 } from '../../redux/slices/projectsSlice/projectsSlice';
 
+import { selectTasksSlice } from '../../redux/slices/tasksSlice';
+
 import { toggleProjectFormVisibility } from '../../redux/slices/dataFormsSlice';
 
 const GeneralProjectsList = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const [openedprojectMenuId, setOpenedprojectMenuId] = useState<string | null>(
     null
   );
-  const isLoadingViaAPI: boolean = useSelector(selectIsLoadingViaAPI);
-  const projects_URL: string = 'http://localhost:3001/projects';
-
+  const isProjectsDataLoading: boolean = useSelector(selectIsLoadingViaAPI);
   const projectsList: Project_Type[] = useSelector(selectProjects);
+
+  const isTasksDataLoading: boolean =
+    useSelector(selectTasksSlice).isLoadingViaAPI;
+
+  const projects_URL: string = 'http://localhost:3001/projects';
 
   // Загрузка данных по проектам:
   // ------------------------------
@@ -72,7 +78,12 @@ const GeneralProjectsList = () => {
 
   return (
     <div className="p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow xl:flex-grow">
-      <h2 className="font-semibold md:text-lg">Ваши проекты:</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="font-semibold md:text-lg">Ваши проекты:</h2>
+        {isProjectsDataLoading && projectsList.length > 0 ? (
+          <div className="w-5 h-5 border-4 border-t-transparent border-blue-300 rounded-full animate-spin"></div>
+        ) : null}
+      </div>
 
       <ul className="h-[190px] flex flex-col gap-1 overflow-y-auto">
         {projectsList.length > 0 ? (
@@ -90,7 +101,7 @@ const GeneralProjectsList = () => {
           })
         ) : (
           <div className="m-auto flex flex-col gap-3 items-center">
-            {isLoadingViaAPI ? (
+            {isProjectsDataLoading ? (
               <Loader />
             ) : (
               <>
@@ -103,9 +114,14 @@ const GeneralProjectsList = () => {
           </div>
         )}
       </ul>
+
       <Button
-        disabled={isLoadingViaAPI}
-        className="p-3 text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
+        disabled={isProjectsDataLoading || isTasksDataLoading}
+        className={`p-3 text-sm font-semibold rounded-lg cursor-pointer text-[whitesmoke] ${
+          isProjectsDataLoading || isTasksDataLoading
+            ? 'bg-[#c3c3c3]'
+            : 'bg-blue-500 transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]'
+        }`}
         children="Добавить Проект"
         onClick={() => {
           handleToggleAddNewProjectForm();

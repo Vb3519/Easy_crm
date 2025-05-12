@@ -77,13 +77,13 @@ const App = () => {
           <ul className="flex gap-2">
             <li>
               <PiGearSix
-                className="text-[25px] cursor-pointer"
+                className="text-[25px] cursor-pointer transition duration-200 ease-in hover:text-blue-500"
                 title="Настройки"
               />
             </li>
             <li>
               <IoIosNotificationsOutline
-                className="text-[25px] cursor-pointer"
+                className="text-[25px] cursor-pointer transition duration-200 ease-in hover:text-blue-500"
                 title="Уведомления"
               />
             </li>
@@ -94,14 +94,14 @@ const App = () => {
       <main className="mb-auto font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-8">
         <div className="p-2 flex gap-2 xs:px-4 md:hidden">
           <Button
-            className="bg-blue-500 text-[whitesmoke]"
+            className="bg-blue-500 text-[whitesmoke] transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]"
             children="Проекты"
             onClick={() => {
               togglePropjectsPageVisibility();
             }}
           />
           <Button
-            className="bg-blue-500 text-[whitesmoke]"
+            className="bg-blue-500 text-[whitesmoke] transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]"
             children="Пользователи"
             onClick={() => {
               toggleUsersPageVisibility();

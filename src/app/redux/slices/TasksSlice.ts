@@ -7,6 +7,8 @@ import createNewTask from '../../../shared/utils/createNewTask';
 interface TasksState_Type {
   isLoadingViaAPI: boolean;
   isChangingTaskStatusViaAPI: boolean;
+  isAddingNewTaskViaApi: boolean;
+  selectedTaskId: string;
   tasks: Task_Type[];
 }
 
@@ -14,6 +16,8 @@ interface TasksSlice_Type {
   tasks: {
     isLoadingViaAPI: boolean;
     isChangingTaskStatusViaAPI: boolean;
+    isAddingNewTaskViaApi: boolean;
+    selectedTaskId: string;
     tasks: Task_Type[];
   };
 }
@@ -197,29 +201,45 @@ export const deleteTask = createAsyncThunk(
 const initialState: TasksState_Type = {
   isLoadingViaAPI: false,
   isChangingTaskStatusViaAPI: false,
+  isAddingNewTaskViaApi: false,
+  selectedTaskId: '',
   tasks: [],
 };
 
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    // Удаление задачи (из состояния), когда удален проект:
+    // -------------------------------------
+    deleteAllProjectTasks: (state, action) => {
+      state.tasks = state.tasks.filter((taskInfo) => {
+        return taskInfo.projectId !== action.payload;
+      });
+    },
+
+    // Сохранение id выбранной задачи:
+    // -------------------------------------
+    setSelectedTaskId: (state, action) => {
+      return { ...state, selectedTaskId: action.payload };
+    },
+  },
   extraReducers: (builder) => {
     // Добавление новой задачи:
     // -------------------------------
     builder.addCase(addNewTask.pending, (state) => {
-      state.isLoadingViaAPI = true;
+      state.isAddingNewTaskViaApi = true;
     });
 
     builder.addCase(addNewTask.fulfilled, (state, action) => {
       if (action.payload?.projectId) {
         state.tasks.push(action.payload);
       }
-      state.isLoadingViaAPI = false;
+      state.isAddingNewTaskViaApi = false;
     });
 
     builder.addCase(addNewTask.rejected, (state) => {
-      state.isLoadingViaAPI = false;
+      state.isAddingNewTaskViaApi = false;
     });
 
     // Загрузка задач выбранного проекта:
@@ -284,6 +304,7 @@ const tasksSlice = createSlice({
 });
 
 // Действия:
+export const { deleteAllProjectTasks, setSelectedTaskId } = tasksSlice.actions;
 
 // Часть состояния:
 export const selectTasksSlice = (state: TasksSlice_Type) => state.tasks;

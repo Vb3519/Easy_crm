@@ -3,7 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 
 // State:
 import { selectProjectsSlice } from '../../redux/slices/projectsSlice/projectsSlice';
-import { selectTasksSlice } from '../../redux/slices/tasksSlice';
+import {
+  selectTasksSlice,
+  setSelectedTaskId,
+} from '../../redux/slices/tasksSlice';
 
 // Types:
 import { AppDispatch } from '../../redux/store';
@@ -58,25 +61,29 @@ const ActiveProjectDetails = () => {
     setTaskOptionsMenuOpenedId((prevId: string | null) => {
       return prevId === id ? null : id;
     });
+
+    dispatch(setSelectedTaskId(id));
   };
 
   return (
     <div className="flex flex-col gap-3 xs:px-4 md:basis-[55%] md:px-0 xl:basis-[70%] 2xl:basis-[80%]">
       <div className="h-full p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow">
-        <h3 className="font-semibold text-lg leading-[25px]">
-          {activeProjectDetails
-            ? activeProjectDetails.title
-            : 'Название активного проекта'}
+        <h3 className="font-semibold leading-[25px] md:text-lg">
+          {activeProjectDetails ? activeProjectDetails.title : null}
         </h3>
 
-        <nav>
+        <nav className="text-sm md:text-[16px]">
           <ul className="flex gap-3">
-            <li className="cursor-pointer">Задачи</li>
-            <li className="cursor-pointer">В разработке</li>
+            <li className="cursor-pointer transition duration-200 ease-in hover:text-blue-500">
+              Задачи
+            </li>
+            <li className="cursor-pointer transition duration-200 ease-in hover:text-blue-500">
+              В разработке
+            </li>
           </ul>
         </nav>
 
-        <div className="flex flex-col gap-2 xl:flex-row">
+        <div className="text-sm flex flex-col gap-2 md:text-[16px] xl:flex-row">
           <TodoTasksPage
             tasksTodo={tasksTodo}
             taskWithOpenedMenuId={taskOptionsMenuOpenedId}

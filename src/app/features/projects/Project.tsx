@@ -12,11 +12,13 @@ import { AppDispatch } from '../../redux/store';
 import {
   selectProjectsSlice,
   setActiveProjectId,
+  deleteProjectWithTasks,
 } from '../../redux/slices/projectsSlice/projectsSlice';
 
 import {
   loadActiveProjectTasks,
   selectTasksSlice,
+  deleteAllProjectTasks,
 } from '../../redux/slices/tasksSlice';
 
 import { toggleTaskFormVisibility } from '../../redux/slices/dataFormsSlice';
@@ -37,10 +39,17 @@ const Project: React.FC<ProjectProps_Type> = ({
   deleteProject,
 }) => {
   const dispatch: AppDispatch = useDispatch();
+
+  // Проекты:
   const projectStateSlice = useSelector(selectProjectsSlice);
+  const isprojectDataLoading: boolean = projectStateSlice.isLoadingViaAPI;
   const selectedProjectId: string | null = projectStateSlice.selectedProjectId;
+
+  // Задачи:
   const tasksStateSlice = useSelector(selectTasksSlice);
   const isTasksDataLoading: boolean = tasksStateSlice.isLoadingViaAPI;
+
+  const tasks_URL: string = 'http://localhost:3001/tasks';
 
   // Выбор активного проекта и загрузка его задач:
   // ------------------------------------------------
@@ -70,11 +79,28 @@ const Project: React.FC<ProjectProps_Type> = ({
     closeOptionsMenu();
   };
 
+  // Удаление проекта и всех его задач (API и слайс):
+  // ------------------------------------------------
+  const handleDeleteProjectWithTasks = () => {
+    if (selectedProjectId) {
+      // Удаление проекта (API):
+      deleteProject(selectedProjectId);
+
+      // Удаление задач проекта (API):
+      dispatch(
+        deleteProjectWithTasks({ projectId: selectedProjectId, url: tasks_URL })
+      );
+
+      // Удаление задач проекта (слайс состояния Redux):
+      dispatch(deleteAllProjectTasks(selectedProjectId));
+    }
+  };
+
   return (
     <li className="text-sm w-full relative p-2 flex items-center gap-2 border-2 border-gray-200 rounded-lg md:text-[16px]">
       <button
-        className="flex items-center gap-2 cursor-pointer"
-        disabled={isTasksDataLoading}
+        className="flex items-center gap-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500"
+        disabled={isTasksDataLoading || isprojectDataLoading}
         onClick={() => {
           handleSetProjectIdAndLoadThisProjectTasks(projectInfo.id);
           closeOptionsMenu();
@@ -85,29 +111,39 @@ const Project: React.FC<ProjectProps_Type> = ({
         <p>{projectInfo.title}</p>
       </button>
 
-      <button
-        disabled={isTasksDataLoading}
-        className="ml-auto cursor-pointer"
-        onClick={() => {
-          openOptionsMenu(projectInfo.id);
-        }}
-      >
-        <BsThreeDotsVertical />
-      </button>
+      {selectedProjectId === projectInfo.id ? (
+        <button
+          disabled={isTasksDataLoading || isprojectDataLoading}
+          className="ml-auto cursor-pointer"
+          onClick={() => {
+            openOptionsMenu(projectInfo.id);
+          }}
+        >
+          <BsThreeDotsVertical
+            className={`${
+              isTasksDataLoading || isprojectDataLoading
+                ? 'text-gray-400'
+                : 'text-black transition duration-200 ease-in hover:text-blue-500'
+            }`}
+          />
+        </button>
+      ) : null}
+
       {isProjectMenuOpened ? (
         <ul className="absolute z-10 top-[30px] right-[10px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
           <li
-            className="cursor-pointer hover:underline"
+            className="cursor-pointer transition duration-200 ease-in hover:text-blue-500"
             onClick={() => {
               handleToggleTaskFormVisibility();
             }}
           >
             Добавить задачу
           </li>
+
           <li
-            className="cursor-pointer hover:underline"
+            className="cursor-pointer transition duration-200 ease-in hover:text-blue-500"
             onClick={() => {
-              deleteProject(projectInfo.id);
+              handleDeleteProjectWithTasks();
               openOptionsMenu(projectInfo.id);
             }}
           >

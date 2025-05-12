@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { Project_Type } from '../../../../entities/Project_Type';
+import { Task_Type } from '../../../../entities/Task_Type';
 
 import createNewProject from '../../../../shared/utils/createNewProject';
 
@@ -110,7 +111,7 @@ export const deleteSelectedProject = createAsyncThunk<Project_Type, string>(
   async (id: string, thunkAPI) => {
     const projectsURLwithId: string = `http://localhost:3001/projects/${id}`;
 
-    await serverDelayImitation(1000);
+    await serverDelayImitation(2000);
 
     try {
       const deleteProjectResponse: Response = await fetch(projectsURLwithId, {
@@ -128,6 +129,50 @@ export const deleteSelectedProject = createAsyncThunk<Project_Type, string>(
         );
         return thunkAPI.rejectWithValue(
           `HTTP Error: ${deleteProjectResponse.status} ${deleteProjectResponse.statusText}`
+        );
+      }
+    } catch (error: unknown) {
+      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+    }
+  }
+);
+
+// -----------------------------------------
+// Удаление проекта (со всеми задачами):
+// -----------------------------------------
+export const deleteProjectWithTasks = createAsyncThunk(
+  'projects/deleteProjectWithTasks',
+  async (payload: { projectId: string; url: string }, thunkAPI) => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('done');
+      }, 2000);
+    });
+
+    // http://localhost:3001/tasks
+    const { projectId, url } = payload;
+
+    try {
+      const projectTasksResponse: Response = await fetch(
+        `${url}?projectId=${projectId}`
+      );
+
+      if (projectTasksResponse.ok) {
+        const projectTasks: Task_Type[] = await projectTasksResponse.json();
+
+        await Promise.all(
+          projectTasks.map((taskInfo) => {
+            fetch(`${url}/${taskInfo.id}`, { method: 'DELETE' });
+          })
+        );
+
+        return projectId;
+      } else {
+        console.log(
+          `HTTP Error: ${projectTasksResponse.status} ${projectTasksResponse.statusText}`
+        );
+        return thunkAPI.rejectWithValue(
+          `HTTP Error: ${projectTasksResponse.status} ${projectTasksResponse.statusText}`
         );
       }
     } catch (error: unknown) {
@@ -216,6 +261,26 @@ const projectsSlice = createSlice({
 
     builder.addCase(deleteSelectedProject.rejected, (state) => {
       return { ...state, isLoadingViaAPI: false };
+    });
+
+    // Удаление выбранного проекта (и его задач):
+    // ---------------------------------------------
+    builder.addCase(deleteProjectWithTasks.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
+    builder.addCase(deleteProjectWithTasks.fulfilled, (state, action) => {
+      state.isLoadingViaAPI = false;
+
+      state.projects = state.projects.filter((projectInfo) => {
+        return projectInfo.id !== action.payload;
+      });
+
+      state.selectedProjectId = null;
+    });
+
+    builder.addCase(deleteProjectWithTasks.rejected, (state) => {
+      state.isLoadingViaAPI = false;
     });
   },
 });
