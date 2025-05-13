@@ -38,9 +38,11 @@ export const loadActiveProjectTasks = createAsyncThunk(
   async (projectIdValue: string, thunkAPI) => {
     await serverDelayImitation(2000);
 
+    // `http://localhost:3001/tasks?projectId=${projectIdValue}`
+    // `https://easy-crm-3ii3.onrender.com/tasks?projectId=${projectIdValue}`
     try {
       const response: Response = await fetch(
-        `http://localhost:3001/tasks?projectId=${projectIdValue}`,
+        `https://easy-crm-3ii3.onrender.com/tasks?projectId=${projectIdValue}`,
         {
           method: 'GET',
         }
@@ -124,9 +126,11 @@ export const changeTaskStatus = createAsyncThunk(
 
     const { taskId, taskStatus } = payload;
 
+    // `http://localhost:3001/tasks/${taskId}`
+    // `https://easy-crm-3ii3.onrender.com/tasks/${taskId}`
     try {
       const changeTaskStatusResponse: Response = await fetch(
-        `http://localhost:3001/tasks/${taskId}`,
+        `https://easy-crm-3ii3.onrender.com/tasks/${taskId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -165,9 +169,11 @@ export const deleteTask = createAsyncThunk(
   async (taskId: string, thunkAPI) => {
     await serverDelayImitation(2000);
 
+    // `http://localhost:3001/tasks/${taskId}`
+    // `https://easy-crm-3ii3.onrender.com/tasks/${taskId}`
     try {
       const deleteTaskResponse: Response = await fetch(
-        `http://localhost:3001/tasks/${taskId}`,
+        `https://easy-crm-3ii3.onrender.com/tasks/${taskId}`,
         {
           method: 'DELETE',
         }

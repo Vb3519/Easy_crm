@@ -49,7 +49,8 @@ const Project: React.FC<ProjectProps_Type> = ({
   const tasksStateSlice = useSelector(selectTasksSlice);
   const isTasksDataLoading: boolean = tasksStateSlice.isLoadingViaAPI;
 
-  const tasks_URL: string = 'http://localhost:3001/tasks';
+  // const tasks_URL: string = 'http://localhost:3001/tasks';
+  const tasks_URL: string = 'https://easy-crm-3ii3.onrender.com/tasks';
 
   // Выбор активного проекта и загрузка его задач:
   // ------------------------------------------------

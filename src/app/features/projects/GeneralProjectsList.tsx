@@ -36,7 +36,8 @@ const GeneralProjectsList = () => {
   const isTasksDataLoading: boolean =
     useSelector(selectTasksSlice).isLoadingViaAPI;
 
-  const projects_URL: string = 'http://localhost:3001/projects';
+  // const projects_URL: string = 'http://localhost:3001/projects';
+  const projects_URL: string = 'https://easy-crm-3ii3.onrender.com/projects';
 
   // Загрузка данных по проектам:
   // ------------------------------
