@@ -90,8 +90,8 @@ export const addNewProject = createAsyncThunk(
 export const deleteSelectedProject = createAsyncThunk<Project_Type, string>(
   'projects/deleteProject',
   async (id: string, thunkAPI) => {
-    // const projectsURLwithId: string = `http://localhost:3001/projects/${id}`;
-    const projectsURLwithId: string = `https://easy-crm-3ii3.onrender.com/projects/${id}`;
+    const projectsURLwithId: string = `http://localhost:3001/projects/${id}`;
+    // const projectsURLwithId: string = `https://easy-crm-3ii3.onrender.com/projects/${id}`;
 
     await serverDelayImitation(2000);
 

@@ -25,8 +25,8 @@ const AddNewProjectForm = () => {
 
   const projectsList = useSelector(selectProjects);
 
-  // const projects_URL: string = 'http://localhost:3001/projects';
-  const projects_URL: string = 'https://easy-crm-3ii3.onrender.com/projects';
+  const projects_URL: string = 'http://localhost:3001/projects';
+  // const projects_URL: string = 'https://easy-crm-3ii3.onrender.com/projects';
 
   // Обработка состояния названия проекта:
   // --------------------------------------------

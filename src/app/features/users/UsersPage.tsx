@@ -24,8 +24,8 @@ const UsersPage = () => {
   const usersSliceState = useSelector(selectUsersSlice);
   const users: User_Type[] = useSelector(selectUsers);
 
-  // const users_URL: string = 'http://localhost:3001/users';
-  const users_URL: string = 'https://easy-crm-3ii3.onrender.com/users';
+  const users_URL: string = 'http://localhost:3001/users';
+  // const users_URL: string = 'https://easy-crm-3ii3.onrender.com/users';
 
   // Загрузка данных пользователей:
   const handleFetchUsersData = () => {
