@@ -20,6 +20,7 @@ import Button from '../../../shared/ui/Button';
 
 const AddNewProjectForm = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const [projectTitle, setProjectTitle] = useState<string>('');
 
   const projectsList = useSelector(selectProjects);
@@ -61,7 +62,7 @@ const AddNewProjectForm = () => {
   return (
     <Form>
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Добавление нового проекта:</h2>
+        <h2 className="font-semibold lg:text-lg">Добавление нового проекта:</h2>
         <button
           type="button"
           aria-label="Закрыть форму"
@@ -73,13 +74,14 @@ const AddNewProjectForm = () => {
           <RxCross2 className="text-xl text-gray-600" />
         </button>
       </div>
-      <fieldset className="flex flex-col gap-4">
+
+      <fieldset className="flex flex-col gap-4 lg:gap-6">
         <label>Название проекта:</label>
         <input
           value={projectTitle}
           name="title"
           required
-          className="p-3 text-sm rounded-lg bg-[#e2e2e2] outline-none"
+          className="p-3 text-sm rounded-lg bg-[#e2e2e2] outline-none md:text-[16px]"
           type="text"
           placeholder="Название проекта..."
           maxLength={20}
@@ -89,8 +91,9 @@ const AddNewProjectForm = () => {
             handleSetProjectTitle(projectTitle);
           }}
         />
+
         <Button
-          className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
+          className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke] transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]"
           type="submit"
           children="Отправить"
           onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

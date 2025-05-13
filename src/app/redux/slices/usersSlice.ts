@@ -1,10 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+// Types:
 import { User_Type } from '../../../entities/User_Type.ts';
+
+// Utils:
 import createNewUser from '../../../shared/utils/createNewUser.ts';
+import {
+  fetchData,
+  serverDelayImitation,
+} from '../../../shared/utils/fetchData.ts';
+
 interface UsersState_Type {
   users: User_Type[];
   isLoadingViaAPI: boolean;
+  error: string;
 }
 
 interface UsersSlice_Type {
@@ -14,32 +23,7 @@ interface UsersSlice_Type {
 const initialState: UsersState_Type = {
   users: [],
   isLoadingViaAPI: false,
-};
-
-// ---------------------------------------
-// Общиe функции загрузки (перенеси их в utils):
-// ---------------------------------------
-
-// имитация ответа от сервера:
-const serverDelayImitaion = async (delayTimer: number): Promise<void> => {
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('done');
-    }, delayTimer);
-  });
-};
-
-// загрузка данных:
-const fetchData = async (url: string) => {
-  const response: Response = await fetch(url);
-
-  if (response.ok) {
-    const data: unknown = await response.json();
-    return data;
-  } else {
-    console.log(`HTTP Error: ${response.status} ${response.statusText}`);
-    throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-  }
+  error: '',
 };
 
 // ---------------------------------------
@@ -49,13 +33,15 @@ export const fetchUsersData = createAsyncThunk<User_Type[], string>(
   'users/fetchUsers',
   async (url: string, thunkAPI) => {
     // имитация ответа сервера:
-    await serverDelayImitaion(3000);
+    await serverDelayImitation(3000);
 
     try {
       const usersData = (await fetchData(url)) as User_Type[];
       return usersData;
     } catch (error: unknown) {
-      return thunkAPI.rejectWithValue((error as Error).message);
+      return thunkAPI.rejectWithValue(
+        `Пользователи, загрузка: ${(error as Error).message}`
+      );
       // throw new Error(`Error: ${(error as Error).message}`);
     }
   }
@@ -67,11 +53,7 @@ export const fetchUsersData = createAsyncThunk<User_Type[], string>(
 export const addNewUserData = createAsyncThunk(
   'users/addNewUser',
   async (payload: { userName: string; url: string }, thunkAPI) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
+    await serverDelayImitation(2000);
 
     const { userName, url } = payload;
 
@@ -105,7 +87,9 @@ export const addNewUserData = createAsyncThunk(
         return newUserInfo;
       }
     } catch (error) {
-      return thunkAPI.rejectWithValue((error as Error).message);
+      return thunkAPI.rejectWithValue(
+        `Добавление пользователя: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -116,11 +100,7 @@ export const addNewUserData = createAsyncThunk(
 export const deleteUserData = createAsyncThunk(
   'users/delete',
   async (userId: string, thunkAPI) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 1000);
-    });
+    await serverDelayImitation(1000);
 
     const urlWithId: string = `http://localhost:3001/users/${userId}`;
     // const urlWithId: string = `https://easy-crm-3ii3.onrender.com/users/${userId}`;
@@ -141,7 +121,9 @@ export const deleteUserData = createAsyncThunk(
       }
     } catch (error: unknown) {
       console.log(`Error: ${(error as Error).message}`);
-      return thunkAPI.rejectWithValue((error as Error).message);
+      return thunkAPI.rejectWithValue(
+        `Удаление пользователя: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -157,7 +139,7 @@ const usersSlice = createSlice({
   extraReducers: (builder) => {
     // Загрузка данных пользователей:
     builder.addCase(fetchUsersData.pending, (state) => {
-      return { ...state, isLoadingViaAPI: true };
+      return { ...state, isLoadingViaAPI: true, error: '' };
     });
 
     builder.addCase(fetchUsersData.fulfilled, (state, action) => {
@@ -167,13 +149,17 @@ const usersSlice = createSlice({
       }
     });
 
-    builder.addCase(fetchUsersData.rejected, (state) => {
-      return { ...state, isLoadingViaAPI: false };
+    builder.addCase(fetchUsersData.rejected, (state, action) => {
+      return {
+        ...state,
+        isLoadingViaAPI: false,
+        error: action.payload as string,
+      };
     });
 
     // Добавление нового пользователя:
     builder.addCase(addNewUserData.pending, (state) => {
-      return { ...state, isLoadingViaAPI: true };
+      return { ...state, isLoadingViaAPI: true, error: '' };
     });
 
     builder.addCase(addNewUserData.fulfilled, (state, action) => {
@@ -184,13 +170,18 @@ const usersSlice = createSlice({
       }
     });
 
-    builder.addCase(addNewUserData.rejected, (state) => {
-      return { ...state, isLoadingViaAPI: false };
+    builder.addCase(addNewUserData.rejected, (state, action) => {
+      return {
+        ...state,
+        isLoadingViaAPI: false,
+        error: action.payload as string,
+      };
     });
 
     // Удаление пользователя:
     builder.addCase(deleteUserData.pending, (state) => {
       state.isLoadingViaAPI = true;
+      state.error = '';
     });
 
     builder.addCase(deleteUserData.fulfilled, (state, action) => {
@@ -201,8 +192,9 @@ const usersSlice = createSlice({
       });
     });
 
-    builder.addCase(deleteUserData.rejected, (state) => {
+    builder.addCase(deleteUserData.rejected, (state, action) => {
       state.isLoadingViaAPI = false;
+      state.error = action.payload as string;
     });
   },
 });

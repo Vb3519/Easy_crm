@@ -19,6 +19,7 @@ import Button from '../../../shared/ui/Button';
 
 const AddNewUserForm = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const [userName, setUserName] = useState<string>('');
   const users: User_Type[] = useSelector(selectUsers);
 
@@ -61,7 +62,9 @@ const AddNewUserForm = () => {
   return (
     <Form>
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Добавление нового пользователя:</h2>
+        <h2 className="font-semibold text-[16px] lg:text-lg">
+          Добавление нового пользователя:
+        </h2>
         <button
           type="button"
           aria-label="Закрыть форму"
@@ -73,7 +76,8 @@ const AddNewUserForm = () => {
           <RxCross2 className="text-xl text-gray-600" />
         </button>
       </div>
-      <fieldset className="flex flex-col gap-4">
+
+      <fieldset className="flex flex-col gap-4 lg:gap-6">
         <label>Имя пользователя:</label>
         <input
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,13 +87,14 @@ const AddNewUserForm = () => {
           value={userName}
           name="name"
           required
-          className="p-3 text-sm rounded-lg bg-[#e2e2e2] outline-none"
+          className="p-3 text-sm rounded-lg bg-[#e2e2e2] outline-none md:text-[16px]"
           type="text"
           placeholder="Имя пользователя..."
           maxLength={15}
         />
+
         <Button
-          className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
+          className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke] transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]"
           type="submit"
           children="Отправить"
           onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

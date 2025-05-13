@@ -1,8 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+// Types:
 import { Task_Type } from '../../../entities/Task_Type';
 
+// Utils:
 import createNewTask from '../../../shared/utils/createNewTask';
+import {
+  fetchData,
+  serverDelayImitation,
+} from '../../../shared/utils/fetchData';
 
 interface TasksState_Type {
   isLoadingViaAPI: boolean;
@@ -10,6 +16,7 @@ interface TasksState_Type {
   isAddingNewTaskViaApi: boolean;
   selectedTaskId: string;
   tasks: Task_Type[];
+  error: string;
 }
 
 interface TasksSlice_Type {
@@ -19,6 +26,7 @@ interface TasksSlice_Type {
     isAddingNewTaskViaApi: boolean;
     selectedTaskId: string;
     tasks: Task_Type[];
+    error: string;
   };
 }
 
@@ -28,11 +36,7 @@ interface TasksSlice_Type {
 export const loadActiveProjectTasks = createAsyncThunk(
   'tasks/loadProjectTasks',
   async (projectIdValue: string, thunkAPI) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
+    await serverDelayImitation(2000);
 
     try {
       const response: Response = await fetch(
@@ -55,7 +59,7 @@ export const loadActiveProjectTasks = createAsyncThunk(
     } catch (error: unknown) {
       console.log(`HTTP Error: ${(error as Error).message}`);
       return thunkAPI.rejectWithValue(
-        `HTTP Error: ${(error as Error).message}`
+        `Загрузка задач: ${(error as Error).message}`
       );
     }
   }
@@ -76,11 +80,7 @@ export const addNewTask = createAsyncThunk(
     },
     thunkAPI
   ) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
+    await serverDelayImitation(2000);
 
     const { url, projectId, title, description, type } = payload;
 
@@ -101,13 +101,15 @@ export const addNewTask = createAsyncThunk(
         console.log(
           `HTTP Error: ${addNewTaskResponse.status} ${addNewTaskResponse.statusText}`
         );
-        thunkAPI.rejectWithValue(
+        return thunkAPI.rejectWithValue(
           `HTTP Error: ${addNewTaskResponse.status} ${addNewTaskResponse.statusText}`
         );
       }
     } catch (error: unknown) {
       console.log(`Error: ${(error as Error).message}`);
-      thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Добавление задачи: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -118,11 +120,7 @@ export const addNewTask = createAsyncThunk(
 export const changeTaskStatus = createAsyncThunk(
   'tasks/changeStatus',
   async (payload: { taskId: string; taskStatus: string }, thunkAPI) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
+    await serverDelayImitation(2000);
 
     const { taskId, taskStatus } = payload;
 
@@ -152,7 +150,9 @@ export const changeTaskStatus = createAsyncThunk(
       }
     } catch (error: unknown) {
       console.log(`Error: ${(error as Error).message}`);
-      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Изменение статуса задачи: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -163,11 +163,7 @@ export const changeTaskStatus = createAsyncThunk(
 export const deleteTask = createAsyncThunk(
   'tasks/deleteTask',
   async (taskId: string, thunkAPI) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve('done');
-      }, 2000);
-    });
+    await serverDelayImitation(2000);
 
     try {
       const deleteTaskResponse: Response = await fetch(
@@ -183,16 +179,16 @@ export const deleteTask = createAsyncThunk(
         return deletedTask;
       } else {
         console.log(
-          `Delete Task HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
+          `Удаление задачи HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
         );
         return thunkAPI.rejectWithValue(
-          `Delete Task HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
+          `Удаление задачи HTTP Error: ${deleteTaskResponse.status} ${deleteTaskResponse.statusText}`
         );
       }
     } catch (error: unknown) {
-      console.log(`Delete Task Error: ${(error as Error).message}`);
+      console.log(`Удаление задачи: ${(error as Error).message}`);
       return thunkAPI.rejectWithValue(
-        `Delete Task Error: ${(error as Error).message}`
+        `Удаление задачи: ${(error as Error).message}`
       );
     }
   }
@@ -204,6 +200,7 @@ const initialState: TasksState_Type = {
   isAddingNewTaskViaApi: false,
   selectedTaskId: '',
   tasks: [],
+  error: '',
 };
 
 const tasksSlice = createSlice({
@@ -229,6 +226,7 @@ const tasksSlice = createSlice({
     // -------------------------------
     builder.addCase(addNewTask.pending, (state) => {
       state.isAddingNewTaskViaApi = true;
+      state.error = '';
     });
 
     builder.addCase(addNewTask.fulfilled, (state, action) => {
@@ -238,14 +236,16 @@ const tasksSlice = createSlice({
       state.isAddingNewTaskViaApi = false;
     });
 
-    builder.addCase(addNewTask.rejected, (state) => {
+    builder.addCase(addNewTask.rejected, (state, action) => {
       state.isAddingNewTaskViaApi = false;
+      state.error = action.payload as string;
     });
 
     // Загрузка задач выбранного проекта:
     // -------------------------------------
     builder.addCase(loadActiveProjectTasks.pending, (state) => {
       state.isLoadingViaAPI = true;
+      state.error = '';
     });
 
     builder.addCase(loadActiveProjectTasks.fulfilled, (state, action) => {
@@ -253,14 +253,16 @@ const tasksSlice = createSlice({
       state.tasks = action.payload;
     });
 
-    builder.addCase(loadActiveProjectTasks.rejected, (state) => {
+    builder.addCase(loadActiveProjectTasks.rejected, (state, action) => {
       state.isLoadingViaAPI = false;
+      state.error = action.payload as string;
     });
 
     // Изменение статуса задачи:
     // -------------------------------------
     builder.addCase(changeTaskStatus.pending, (state) => {
       state.isChangingTaskStatusViaAPI = true;
+      state.error = '';
     });
 
     builder.addCase(changeTaskStatus.fulfilled, (state, action) => {
@@ -277,14 +279,15 @@ const tasksSlice = createSlice({
       }
     });
 
-    builder.addCase(changeTaskStatus.rejected, (state) => {
+    builder.addCase(changeTaskStatus.rejected, (state, action) => {
       state.isChangingTaskStatusViaAPI = false;
+      state.error = action.payload as string;
     });
 
     // Удаление задачи:
     // -------------------------------------
     builder.addCase(deleteTask.pending, (state) => {
-      return { ...state, isChangingTaskStatusViaAPI: true };
+      return { ...state, isChangingTaskStatusViaAPI: true, error: '' };
     });
 
     builder.addCase(deleteTask.fulfilled, (state, action) => {
@@ -297,8 +300,12 @@ const tasksSlice = createSlice({
       };
     });
 
-    builder.addCase(deleteTask.rejected, (state) => {
-      return { ...state, isChangingTaskStatusViaAPI: false };
+    builder.addCase(deleteTask.rejected, (state, action) => {
+      return {
+        ...state,
+        isChangingTaskStatusViaAPI: false,
+        error: action.payload as string,
+      };
     });
   },
 });

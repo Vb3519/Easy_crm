@@ -17,6 +17,7 @@ import { addNewTask } from '../../redux/slices/tasksSlice';
 
 const AddNewTaskForm = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const projectsSliceState = useSelector(selectProjectsSlice);
   const selectedProjectId: string | null = projectsSliceState.selectedProjectId;
 
@@ -70,7 +71,7 @@ const AddNewTaskForm = () => {
   return (
     <Form>
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Добавление новой задачи:</h2>
+        <h2 className="font-semibold lg:text-lg">Добавление новой задачи:</h2>
         <button
           type="button"
           aria-label="Закрыть форму"
@@ -82,6 +83,7 @@ const AddNewTaskForm = () => {
           <RxCross2 className="text-xl text-gray-600" />
         </button>
       </div>
+
       <fieldset className="flex flex-col gap-4">
         <legend className="pb-2">Информация по задаче:</legend>
         <input
@@ -95,7 +97,7 @@ const AddNewTaskForm = () => {
           value={newTaskData.title}
           name="title"
           required
-          className="p-3 rounded-lg bg-[#e2e2e2] outline-none"
+          className="p-3 rounded-lg bg-[#e2e2e2] outline-none md:text-[16px]"
           type="text"
           placeholder="Название..."
           maxLength={15}
@@ -120,7 +122,7 @@ const AddNewTaskForm = () => {
       <fieldset className="flex flex-col gap-2">
         <legend>Тип задачи:</legend>
         <div>
-          <label className="w-fit flex items-center gap-2 cursor-pointer">
+          <label className="w-fit flex items-center gap-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500">
             <input
               disabled={
                 newTaskData.type !== taskTypes[0] && newTaskData.type !== ''
@@ -139,7 +141,8 @@ const AddNewTaskForm = () => {
             />
             Разработка ПО
           </label>
-          <label className="w-fit flex items-center gap-2 cursor-pointer">
+
+          <label className="w-fit flex items-center gap-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500">
             <input
               disabled={
                 newTaskData.type !== taskTypes[1] && newTaskData.type !== ''
@@ -158,7 +161,8 @@ const AddNewTaskForm = () => {
             />
             Веб-разработка
           </label>
-          <label className="w-fit flex items-center gap-2 cursor-pointer">
+
+          <label className="w-fit flex items-center gap-2 cursor-pointer transition duration-200 ease-in hover:text-blue-500">
             <input
               disabled={
                 newTaskData.type !== taskTypes[2] && newTaskData.type !== ''
@@ -181,7 +185,7 @@ const AddNewTaskForm = () => {
       </fieldset>
 
       <Button
-        className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke]"
+        className="p- text-sm font-semibold rounded-lg cursor-pointer bg-blue-500 text-[whitesmoke] transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]"
         type="submit"
         children="Отправить"
         onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

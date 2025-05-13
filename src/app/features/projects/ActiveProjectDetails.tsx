@@ -19,6 +19,7 @@ import CompletedTasksPage from '../tasks/CompletedTasksPage';
 
 const ActiveProjectDetails = () => {
   const dispatch: AppDispatch = useDispatch();
+
   const [taskOptionsMenuOpenedId, setTaskOptionsMenuOpenedId] = useState<
     string | null
   >(null);
@@ -66,7 +67,7 @@ const ActiveProjectDetails = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 xs:px-4 md:basis-[55%] md:px-0 xl:basis-[70%] 2xl:basis-[80%]">
+    <section className="flex flex-col gap-3 xs:px-4 md:basis-[55%] md:px-0 xl:basis-[70%] 2xl:basis-[80%]">
       <div className="h-full p-2 flex flex-col gap-3 bg-[white] xs:p-4 xs:rounded-xl container-shadow">
         <h3 className="font-semibold leading-[25px] md:text-lg">
           {activeProjectDetails ? activeProjectDetails.title : null}
@@ -89,11 +90,13 @@ const ActiveProjectDetails = () => {
             taskWithOpenedMenuId={taskOptionsMenuOpenedId}
             toggleTaskOptionsMenu={toggleTaskOptionsMenuVisibility}
           />
+
           <InProgressTasksPage
             tasksInProgress={tasksInProgress}
             taskWithOpenedMenuId={taskOptionsMenuOpenedId}
             toggleTaskOptionsMenu={toggleTaskOptionsMenuVisibility}
           />
+
           <CompletedTasksPage
             tasksCompleted={tasksCompleted}
             taskWithOpenedMenuId={taskOptionsMenuOpenedId}
@@ -101,7 +104,7 @@ const ActiveProjectDetails = () => {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

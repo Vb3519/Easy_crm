@@ -1,10 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
 
+// React-icons:
 import { IoPersonSharp } from 'react-icons/io5';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
+// Types:
 import { User_Type } from '../../../entities/User_Type.ts';
 import { AppDispatch } from '../../redux/store.ts';
+
+// State:
 import {
   deleteUserData,
   selectUsersSlice,
@@ -24,6 +28,7 @@ const User: React.FC<User_Props> = ({
   const dispatch: AppDispatch = useDispatch();
   const usersSliceState = useSelector(selectUsersSlice);
 
+  // Удаление пользователя:
   const handleDeleteUserData = (userId: string) => {
     dispatch(deleteUserData(userId));
   };

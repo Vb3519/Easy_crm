@@ -5,14 +5,12 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 // Types:
 import { Task_Type } from '../../../entities/Task_Type';
 
+// State:
+import { selectTasksSlice } from '../../redux/slices/tasksSlice';
+
+import Loader from '../../../shared/components/Loader';
 import EmptyTask from './EmptyTask';
 import TaskWithDetails from './TaskWithDetails';
-
-import {
-  selectTasksSlice,
-  setSelectedTaskId,
-} from '../../redux/slices/tasksSlice';
-import Loader from '../../../shared/components/Loader';
 
 interface TodoTasksPageProps_Type {
   tasksTodo: Task_Type[];

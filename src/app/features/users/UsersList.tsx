@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+// React-icons:
 import { IoPersonCircleOutline } from 'react-icons/io5';
 
+// Types:
 import { User_Type } from '../../../entities/User_Type.ts';
+
+// State:
+import { selectUsersSlice } from '../../redux/slices/usersSlice.ts';
 
 import Loader from '../../../shared/components/Loader.tsx';
 import User from './User';
-
-import { selectUsersSlice } from '../../redux/slices/usersSlice.ts';
 
 interface UsersList_Props {
   users: User_Type[];
@@ -15,6 +19,7 @@ interface UsersList_Props {
 
 const UsersList: React.FC<UsersList_Props> = ({ users }) => {
   const [openedUserMenuId, setOpenedUserMenuId] = useState<string | null>(null);
+
   const usersSliceState = useSelector(selectUsersSlice);
   const isUsersDataLoading: boolean = usersSliceState.isLoadingViaAPI;
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 // React-icons:
 import { SiCivicrm } from 'react-icons/si';
@@ -11,7 +11,6 @@ import { MdOutlineEmail } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FaTelegramPlane } from 'react-icons/fa';
 
-import { AppDispatch } from './redux/store';
 import { selectProjectsSlice } from './redux/slices/projectsSlice/projectsSlice';
 
 // Лейаут форм для добавления данных:
@@ -28,8 +27,6 @@ import GeneralProjectsList from './features/projects/GeneralProjectsList';
 import UsersPage from './features/users/UsersPage';
 
 const App = () => {
-  const dispatch: AppDispatch = useDispatch();
-
   const formsStateSlice = useSelector(selectDataFormsSlice);
 
   const projectsStateSlice = useSelector(selectProjectsSlice);
@@ -61,6 +58,7 @@ const App = () => {
             Easy <span className="text-blue-500">CRM</span>
           </h1>
         </div>
+
         <div className="flex gap-6 items-center justify-between">
           <div className="flex gap-2 items-center">
             <IoPersonCircleOutline
@@ -74,6 +72,7 @@ const App = () => {
               User Name
             </p>
           </div>
+
           <ul className="flex gap-2">
             <li>
               <PiGearSix
@@ -90,6 +89,7 @@ const App = () => {
           </ul>
         </div>
       </header>
+
       {/* ------------------------------ MAIN: ------------------------------ */}
       <main className="mb-auto font-[inter] flex flex-col gap-4 md:flex-row md:px-4 md:gap-4 lg:px-8">
         <div className="p-2 flex gap-2 xs:px-4 md:hidden">
@@ -109,10 +109,10 @@ const App = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-4 xs:px-4 md:basis-[45%] md:px-0 xl:basis-[30%] 2xl:basis-[20%]">
+        <section className="flex flex-col gap-4 xs:px-4 md:basis-[45%] md:px-0 xl:basis-[30%] 2xl:basis-[20%]">
           {isUsersPageOpened ? <UsersPage /> : null}
           {isProjectsPageOpened ? <GeneralProjectsList /> : null}
-        </div>
+        </section>
 
         {selectedProjectId ? <ActiveProjectDetails /> : <EmptyProjectDetails />}
       </main>
@@ -128,6 +128,7 @@ const App = () => {
             Политика конфиденциальности
           </a>
         </div>
+
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
           <ul className="flex gap-2 items-center">
             <li>
@@ -140,12 +141,14 @@ const App = () => {
               En
             </li>
           </ul>
+
           <div className="flex gap-2 items-center">
             <MdOutlineEmail className="text-[#9c9c9c] text-xl" />
             <span className="cursor-pointer transition duration-200 ease-in hover:text-blue-500">
               vb415@bk.ru
             </span>
           </div>
+
           <ul className="flex gap-2">
             <li className="p-2 rounded-[50%] bg-green-700 text-[whitesmoke] text-xl cursor-pointer transition duration-200 ease-in hover:shadow-[0px_0px_10px_rgba(0,0,0,0.4)]">
               <FaWhatsapp />

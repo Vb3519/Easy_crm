@@ -1,6 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
-
-import { AppDispatch } from '../../redux/store';
+import { useSelector } from 'react-redux';
 
 // Формы добавления данных:
 import AddNewUserForm from './AddNewUserForm';
@@ -11,7 +9,6 @@ import AddNewTaskForm from './AddNewTaskForm';
 import { selectDataFormsSlice } from '../../redux/slices/dataFormsSlice';
 
 const FormsLayout = () => {
-  const dispatch: AppDispatch = useDispatch();
   const dataFormsStateSlice = useSelector(selectDataFormsSlice);
 
   // Добавление нового пользователя (форма):

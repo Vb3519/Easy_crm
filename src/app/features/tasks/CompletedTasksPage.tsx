@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
+// Types:
 import { Task_Type } from '../../../entities/Task_Type';
 
+// State:
+import { selectTasksSlice } from '../../redux/slices/tasksSlice';
+
+import Loader from '../../../shared/components/Loader';
 import EmptyTask from './EmptyTask';
 import TaskWithDetails from './TaskWithDetails';
-
-import { selectTasksSlice } from '../../redux/slices/tasksSlice';
-import Loader from '../../../shared/components/Loader';
 
 interface CompletedTasksPageProps_Type {
   tasksCompleted: Task_Type[];
@@ -27,6 +29,7 @@ const CompletedTasksPage: React.FC<CompletedTasksPageProps_Type> = ({
   const tasksSliceState = useSelector(selectTasksSlice);
   const isTasksDataLoading: boolean = tasksSliceState.isLoadingViaAPI;
 
+  // Отображение списка задач (для любого из трех типов):
   const toggleTasksListVisibility = () => {
     setIsCompletedTasksListOpened(!isCompletedTasksListOpened);
   };
@@ -40,6 +43,7 @@ const CompletedTasksPage: React.FC<CompletedTasksPageProps_Type> = ({
           <span className="w-7 h-7 flex items-center justify-center bg-[#e2e2e2] rounded-md">
             {isTasksDataLoading ? 0 : tasksCompleted.length}
           </span>
+
           <div
             className="ml-auto w-7 h-7 flex items-center justify-center transition delay-100 ease-in cursor-pointer rounded-md hover:bg-[#e2e2e2]"
             onClick={toggleTasksListVisibility}

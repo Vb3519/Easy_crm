@@ -81,6 +81,7 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
           />
         </button>
       </div>
+
       <h4 className="font-semibold">{title}</h4>
       <p className="leading-5">{description}</p>
       <div className="pt-3 flex gap-3 items-center justify-between border-t-1 border-gray-300">
@@ -102,6 +103,7 @@ const TaskWithDetails: React.FC<TaskWithDetailsProps_Type> = ({
           </li>
         </ul>
       </div>
+
       {isOptionsMenuOpened ? (
         <ul className="absolute z-10 top-[50px] right-[15px] p-3 flex flex-col items-center gap-2 border-1 border-gray-200 rounded-lg bg-[white] elem-shadow">
           <li

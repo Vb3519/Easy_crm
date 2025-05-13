@@ -1,36 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+// Types:
 import { Project_Type } from '../../../../entities/Project_Type';
 import { Task_Type } from '../../../../entities/Task_Type';
 
+// Utils:
 import createNewProject from '../../../../shared/utils/createNewProject';
-
-// ------------------------------
-// Общие функции (добавить в папку utils):
-// ------------------------------
-const serverDelayImitation = async (delayTimer: number): Promise<void> => {
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('done');
-    }, delayTimer);
-  });
-};
-
-const fetchData = async (url: string) => {
-  try {
-    const response: Response = await fetch(url);
-    if (response.ok) {
-      const data: unknown = await response.json();
-      return data;
-    } else {
-      console.log(`HTTP Error: ${response.status} ${response.statusText}`);
-      throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-    }
-  } catch (error: unknown) {
-    console.log(`Error: ${(error as Error).message}`);
-    throw new Error(`Error: ${(error as Error).message}`);
-  }
-};
+import {
+  fetchData,
+  serverDelayImitation,
+} from '../../../../shared/utils/fetchData';
 
 // -------------------------------
 // Загрузка данных по проектам:
@@ -44,9 +23,9 @@ export const loadProjectsData = createAsyncThunk<Project_Type[], string>(
       const projectsData = (await fetchData(url)) as Project_Type[];
       return projectsData;
     } catch (error: unknown) {
-      console.log(`Projects data download error: ${(error as Error).message}`);
+      console.log(`Загрузка проектов: ${(error as Error).message}`);
       return thunkAPI.rejectWithValue(
-        `Projects data download error: ${(error as Error).message}`
+        `Загрузка проектов: ${(error as Error).message}`
       );
     }
   }
@@ -98,7 +77,9 @@ export const addNewProject = createAsyncThunk(
         );
       }
     } catch (error: unknown) {
-      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Добавление проекта: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -128,11 +109,13 @@ export const deleteSelectedProject = createAsyncThunk<Project_Type, string>(
           `HTTP Error: ${deleteProjectResponse.status} ${deleteProjectResponse.statusText}`
         );
         return thunkAPI.rejectWithValue(
-          `HTTP Error: ${deleteProjectResponse.status} ${deleteProjectResponse.statusText}`
+          `Удаление проекта: ${deleteProjectResponse.status} ${deleteProjectResponse.statusText}`
         );
       }
     } catch (error: unknown) {
-      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Удаление проекта: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -172,11 +155,13 @@ export const deleteProjectWithTasks = createAsyncThunk(
           `HTTP Error: ${projectTasksResponse.status} ${projectTasksResponse.statusText}`
         );
         return thunkAPI.rejectWithValue(
-          `HTTP Error: ${projectTasksResponse.status} ${projectTasksResponse.statusText}`
+          `Удаление проекта и задач: ${projectTasksResponse.status} ${projectTasksResponse.statusText}`
         );
       }
     } catch (error: unknown) {
-      return thunkAPI.rejectWithValue(`Error: ${(error as Error).message}`);
+      return thunkAPI.rejectWithValue(
+        `Удаление проекта и задач: ${(error as Error).message}`
+      );
     }
   }
 );
@@ -185,6 +170,7 @@ interface ProjectsState_Type {
   isLoadingViaAPI: boolean;
   projects: Project_Type[];
   selectedProjectId: string | null;
+  error: string;
 }
 
 interface ProjectsSlice_Type {
@@ -192,6 +178,7 @@ interface ProjectsSlice_Type {
     isLoadingViaAPI: boolean;
     projects: Project_Type[];
     selectedProjectId: string | null;
+    error: string;
   };
 }
 
@@ -199,6 +186,7 @@ const initialState: ProjectsState_Type = {
   projects: [],
   isLoadingViaAPI: false,
   selectedProjectId: null,
+  error: '',
 };
 
 const projectsSlice = createSlice({
@@ -213,7 +201,7 @@ const projectsSlice = createSlice({
     // Загрузка данных по проектам:
     // -------------------------------
     builder.addCase(loadProjectsData.pending, (state) => {
-      return { ...state, isLoadingViaAPI: true };
+      return { ...state, isLoadingViaAPI: true, error: '' };
     });
 
     builder.addCase(loadProjectsData.fulfilled, (state, action) => {
@@ -223,14 +211,18 @@ const projectsSlice = createSlice({
       }
     });
 
-    builder.addCase(loadProjectsData.rejected, (state) => {
-      return { ...state, isLoadingViaAPI: false };
+    builder.addCase(loadProjectsData.rejected, (state, action) => {
+      return {
+        ...state,
+        isLoadingViaAPI: false,
+        error: action.payload as string,
+      };
     });
 
     // Добавление нового проекта:
     // -------------------------------
     builder.addCase(addNewProject.pending, (state) => {
-      return { ...state, isLoadingViaAPI: true };
+      return { ...state, isLoadingViaAPI: true, error: '' };
     });
 
     builder.addCase(addNewProject.fulfilled, (state, action) => {
@@ -241,14 +233,18 @@ const projectsSlice = createSlice({
       }
     });
 
-    builder.addCase(addNewProject.rejected, (state) => {
-      return { ...state, isLoadingViaAPI: false };
+    builder.addCase(addNewProject.rejected, (state, action) => {
+      return {
+        ...state,
+        isLoadingViaAPI: false,
+        error: action.payload as string,
+      };
     });
 
     // Удаление выбранного проекта:
     // -------------------------------
     builder.addCase(deleteSelectedProject.pending, (state) => {
-      return { ...state, isLoadingViaAPI: true };
+      return { ...state, isLoadingViaAPI: true, error: '' };
     });
 
     builder.addCase(deleteSelectedProject.fulfilled, (state, action) => {
@@ -259,14 +255,19 @@ const projectsSlice = createSlice({
       });
     });
 
-    builder.addCase(deleteSelectedProject.rejected, (state) => {
-      return { ...state, isLoadingViaAPI: false };
+    builder.addCase(deleteSelectedProject.rejected, (state, action) => {
+      return {
+        ...state,
+        isLoadingViaAPI: false,
+        error: action.payload as string,
+      };
     });
 
     // Удаление выбранного проекта (и его задач):
     // ---------------------------------------------
     builder.addCase(deleteProjectWithTasks.pending, (state) => {
       state.isLoadingViaAPI = true;
+      state.error = '';
     });
 
     builder.addCase(deleteProjectWithTasks.fulfilled, (state, action) => {
@@ -279,8 +280,9 @@ const projectsSlice = createSlice({
       state.selectedProjectId = null;
     });
 
-    builder.addCase(deleteProjectWithTasks.rejected, (state) => {
+    builder.addCase(deleteProjectWithTasks.rejected, (state, action) => {
       state.isLoadingViaAPI = false;
+      state.error = action.payload as string;
     });
   },
 });
